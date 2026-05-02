@@ -1,0 +1,79 @@
+Make the following changes to the app. Do not touch anything 
+not mentioned here.
+
+## 1. FIX BROKEN ICONS
+All gray placeholder squares in the feature cards and 
+how-it-works section are broken. Replace every one with 
+a clean inline SVG icon that matches its label. 
+Use stroke-based icons, stroke #1A1A1A, stroke-width 1.5, 
+no fill. Suggested icons:
+- "Tell us how you feel" → face/mood icon
+- "Pick your time" → clock icon
+- "Follow the breath" → wind/wave icon
+- "Mood-first" → sliders icon
+- "Instant start" → play circle icon
+- "Fidget layer" → cursor/sparkle icon
+- "Streak tracking" → bar chart icon
+- "Works offline" → wifi-off icon
+- "Fully free" → unlock icon
+
+## 2. NAV CTA
+Change "TRY IT FREE" button text to "Open Anchor".
+Keep the same styling.
+
+## 3. TAGLINE BADGE
+Change the badge text from "Free · No sign-up · ADHD-friendly" 
+to "Free forever · Open source · For everyone".
+
+## 4. REMOVE "NO SIGN-UP" MESSAGING
+Remove or update any copy that says "0 sign-ups" or 
+"No sign-up required" — replace the stat with:
+"PWA ready" and subtext "Install it, use it anywhere."
+
+## 5. REPLIT ACCOUNT STREAK SYNC
+Add optional Replit OAuth sign-in for streak syncing.
+- Add a small "Sync streak with Replit" link/button 
+  on Screen 4 (Dopamine Reward), below the streak count.
+  Style: Outfit 13px #A89F97, underline on hover.
+- On click: trigger Replit OAuth login flow.
+- On successful auth: save streak data to a simple 
+  endpoint OR store user-keyed data in localStorage 
+  using their Replit username as the key 
+  (e.g., "anchor_streak_[username]").
+- If signed in: show "Synced as [username]" in Outfit 
+  13px #A89F97 below streak. Add a small "Sign out" 
+  inline link next to it.
+- If not signed in: show "Sync with Replit to save 
+  across devices" — same style.
+- Signing in is completely optional. Guest streak via 
+  localStorage still works identically.
+
+## 6. CALENDAR STREAK VIEW
+Add a streak calendar to Screen 4 (Dopamine Reward), 
+between the stat strip and the CTA button.
+
+Layout: a 7-column grid showing the last 28 days (4 weeks).
+Each day is a small square: 28px × 28px, border-radius 6px, 
+gap 4px.
+- Completed day: background #1A1A1A
+- Today (just completed): background #4A7C59
+- Missed day: background rgba(26,26,26,0.08)
+
+Store completed dates as an array in localStorage:
+Key: "anchor_dates" = ["YYYY-MM-DD", "YYYY-MM-DD", ...]
+On session complete: push today's date if not already present.
+
+Label above calendar: "Your last 28 days" — 
+Outfit 500 13px #A89F97, margin-bottom 12px.
+
+## 7. HERO BREATHING CIRCLE
+Add a slow pulse animation to the breathing circle 
+on the landing page hero (not the app player — 
+just the decorative circle in the hero section).
+CSS keyframe: scale 1 → 1.04 → 1, duration 4s, 
+ease-in-out, infinite. Subtle, not distracting.
+
+## 8. SECONDARY CTA WEIGHT
+"See how it works" button on hero: reduce opacity to 0.6,
+remove border if it has one, make it look like a text link 
+rather than a button.

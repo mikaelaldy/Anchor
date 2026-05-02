@@ -6,6 +6,82 @@ interface Props {
   onStart: () => void;
 }
 
+const StepIcon = ({ title }: { title: string }) => {
+  const s = { stroke: "#1A1A1A", strokeWidth: 1.5, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, fill: "none" };
+  if (title === "Tell us how you feel") return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="9" {...s} />
+      <circle cx="9" cy="10.5" r="1" fill="#1A1A1A" />
+      <circle cx="15" cy="10.5" r="1" fill="#1A1A1A" />
+      <path d="M8.5 14.5 Q12 17.5 15.5 14.5" {...s} />
+    </svg>
+  );
+  if (title === "Pick your time") return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="9" {...s} />
+      <path d="M12 7v5l3 3" {...s} />
+    </svg>
+  );
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M5 8 Q8 5 12 8 Q16 11 19 8" {...s} />
+      <path d="M5 13 Q8 10 12 13 Q16 16 19 13" {...s} />
+      <path d="M5 18 Q8 15 12 18 Q16 21 19 18" {...s} />
+    </svg>
+  );
+};
+
+const FeatureIcon = ({ title }: { title: string }) => {
+  const s = { stroke: "#1A1A1A", strokeWidth: 1.5, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, fill: "none" };
+  if (title === "Mood-first") return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <line x1="4" y1="6" x2="20" y2="6" {...s} />
+      <line x1="4" y1="12" x2="20" y2="12" {...s} />
+      <line x1="4" y1="18" x2="20" y2="18" {...s} />
+      <circle cx="8" cy="6" r="2" {...s} />
+      <circle cx="15" cy="12" r="2" {...s} />
+      <circle cx="10" cy="18" r="2" {...s} />
+    </svg>
+  );
+  if (title === "Instant start") return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="9" {...s} />
+      <path d="M10 8.5 L16 12 L10 15.5 Z" {...s} />
+    </svg>
+  );
+  if (title === "Fidget layer") return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M5 3 L5 16 L8.5 12.5 L11 18 L13 17 L10.5 11.5 L15 11.5 Z" {...s} />
+      <path d="M17 5 L19 7" {...s} />
+      <path d="M17 9 L20 9" {...s} />
+      <path d="M14 5 L14 2" {...s} />
+    </svg>
+  );
+  if (title === "Streak tracking") return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <rect x="4" y="14" width="4" height="6" rx="1" {...s} />
+      <rect x="10" y="9" width="4" height="11" rx="1" {...s} />
+      <rect x="16" y="4" width="4" height="16" rx="1" {...s} />
+    </svg>
+  );
+  if (title === "Works offline") return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M5 12.55a11 11 0 0 1 14.08 0" {...s} />
+      <path d="M1.42 9a16 16 0 0 1 10.6-3.77" {...s} />
+      <path d="M22.58 9a16 16 0 0 0-7-3.1" {...s} />
+      <path d="M8.53 16.11a6 6 0 0 1 6.95 0" {...s} />
+      <circle cx="12" cy="20" r="1" fill="#1A1A1A" />
+      <line x1="3" y1="3" x2="21" y2="21" {...s} />
+    </svg>
+  );
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <rect x="8" y="11" width="8" height="10" rx="2" {...s} />
+      <path d="M12 3 a5 5 0 0 1 5 5 v3 H7 V8 a5 5 0 0 1 5-5z" {...s} />
+    </svg>
+  );
+};
+
 const steps = [
   { num: "01", title: "Tell us how you feel", body: "Scattered, Paralyzed, or Buzzing — pick the state that matches right now." },
   { num: "02", title: "Pick your time", body: "1, 3, or 5 minutes. No judgment. Even one minute counts." },
@@ -63,7 +139,6 @@ export default function MarketingLanding({ active, onStart }: Props) {
           height: isMobile ? 64 : 80,
           padding: isMobile ? "0 20px" : "0 40px",
         }}>
-          {/* Logo — scrolls back to top */}
           <button
             onClick={() => containerRef.current?.scrollTo({ top: 0, behavior: "smooth" })}
             style={{
@@ -110,7 +185,7 @@ export default function MarketingLanding({ active, onStart }: Props) {
             onMouseEnter={(e) => { e.currentTarget.style.background = "#333333"; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = "#1A1A1A"; }}
           >
-            Try it free
+            Open Anchor
           </button>
         </div>
       </nav>
@@ -134,7 +209,7 @@ export default function MarketingLanding({ active, onStart }: Props) {
               fontFamily: "'Outfit', sans-serif", fontWeight: 500, fontSize: 13,
               padding: "8px 16px", borderRadius: 100, marginBottom: 28,
             }}>
-              Free · No sign-up · ADHD-friendly
+              Free forever · Open source · For everyone
             </div>
             <h1 style={{
               fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700,
@@ -151,7 +226,7 @@ export default function MarketingLanding({ active, onStart }: Props) {
             }}>
               Anchor is an ADHD-first meditation app that meets your brain where it is — scattered, buzzing, or paralyzed. No subscriptions. No judgement.
             </p>
-            <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, marginTop: 40 }}>
+            <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, marginTop: 40, alignItems: isMobile ? "stretch" : "center" }}>
               <button
                 onClick={onStart}
                 style={{
@@ -172,20 +247,17 @@ export default function MarketingLanding({ active, onStart }: Props) {
                 onClick={() => scrollTo("how-it-works")}
                 style={{
                   backgroundColor: "transparent", color: "#1A1A1A",
-                  fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600,
-                  fontSize: 14, padding: "16px 32px", borderRadius: 100,
-                  border: "1px solid rgba(26,26,26,0.10)", cursor: "pointer",
+                  fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500,
+                  fontSize: 14, padding: "16px 20px", borderRadius: 100,
+                  border: "none", cursor: "pointer",
+                  opacity: 0.6,
                   width: isMobile ? "100%" : "auto",
-                  transition: "border-color 150ms, background 150ms",
+                  transition: "opacity 150ms",
+                  textDecoration: "underline",
+                  textUnderlineOffset: 3,
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(26,26,26,0.30)";
-                  e.currentTarget.style.background = "rgba(26,26,26,0.03)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(26,26,26,0.10)";
-                  e.currentTarget.style.background = "transparent";
-                }}
+                onMouseEnter={(e) => { e.currentTarget.style.opacity = "1"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.6"; }}
               >
                 See how it works
               </button>
@@ -193,14 +265,17 @@ export default function MarketingLanding({ active, onStart }: Props) {
           </div>
 
           <div style={{ flex: isMobile ? "none" : 1, display: "flex", justifyContent: "center" }}>
-            <div style={{
-              width: isMobile ? 280 : 400, height: isMobile ? 280 : 400,
-              borderRadius: "40% 60% 60% 40% / 40% 40% 60% 60%",
-              background: "radial-gradient(circle, rgba(140,122,107,0.12), rgba(140,122,107,0.04))",
-              border: "2px solid rgba(140,122,107,0.20)",
-              boxShadow: "0 0 80px rgba(140,122,107,0.10), 0 0 160px rgba(140,122,107,0.05)",
-              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-            }}>
+            <div
+              className="hero-breathe"
+              style={{
+                width: isMobile ? 280 : 400, height: isMobile ? 280 : 400,
+                borderRadius: "40% 60% 60% 40% / 40% 40% 60% 60%",
+                background: "radial-gradient(circle, rgba(140,122,107,0.12), rgba(140,122,107,0.04))",
+                border: "2px solid rgba(140,122,107,0.20)",
+                boxShadow: "0 0 80px rgba(140,122,107,0.10), 0 0 160px rgba(140,122,107,0.05)",
+                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+              }}
+            >
               <svg width="52" height="52" viewBox="0 0 56 56" fill="none">
                 <circle cx="28" cy="13" r="5" stroke="#8C7A6B" strokeWidth="2" fill="none" />
                 <line x1="28" y1="18" x2="28" y2="40" stroke="#8C7A6B" strokeWidth="2" strokeLinecap="round" />
@@ -231,7 +306,7 @@ export default function MarketingLanding({ active, onStart }: Props) {
           {[
             { stat: "1 min", label: "Shortest session" },
             { stat: "3 moods", label: "Scattered · Paralyzed · Buzzing" },
-            { stat: "0 sign-ups", label: "Just open and breathe" },
+            { stat: "PWA ready", label: "Install it, use it anywhere." },
             { stat: "Streak tracking", label: "Built into the app" },
           ].map((item, i, arr) => (
             <React.Fragment key={i}>
@@ -269,7 +344,9 @@ export default function MarketingLanding({ active, onStart }: Props) {
                 boxShadow: "0 8px 32px rgba(26,26,26,0.08)",
               }}>
                 <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 13, color: "#8C7A6B", letterSpacing: "0.1em", marginBottom: 20 }}>{step.num}</div>
-                <div style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: "rgba(140,122,107,0.10)", marginBottom: 18 }} />
+                <div style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: "rgba(140,122,107,0.10)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18 }}>
+                  <StepIcon title={step.title} />
+                </div>
                 <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 20, color: "#1A1A1A", marginBottom: 8 }}>{step.title}</h3>
                 <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400, fontSize: 15, color: "#A89F97", lineHeight: 1.6, margin: 0 }}>{step.body}</p>
               </div>
@@ -302,7 +379,9 @@ export default function MarketingLanding({ active, onStart }: Props) {
                 backgroundColor: "#F5F4F0", borderRadius: 20, padding: isMobile ? 24 : 32,
                 border: "1px solid rgba(26,26,26,0.10)",
               }}>
-                <div style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: "rgba(140,122,107,0.12)", marginBottom: 14 }} />
+                <div style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: "rgba(140,122,107,0.10)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 14 }}>
+                  <FeatureIcon title={feat.title} />
+                </div>
                 <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 17, color: "#1A1A1A", marginBottom: 6 }}>{feat.title}</div>
                 <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400, fontSize: 15, color: "#A89F97", lineHeight: 1.6, margin: 0 }}>{feat.body}</p>
               </div>

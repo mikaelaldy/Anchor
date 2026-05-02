@@ -101,3 +101,12 @@ body {
 @keyframes ripple-expand {
   to { transform: scale(4); opacity: 0; }
 }
+
+@keyframes hero-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+.hero-breathe {
+  animation: hero-pulse 4s ease-in-out infinite;
+}

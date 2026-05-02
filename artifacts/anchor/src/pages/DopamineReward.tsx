@@ -10,7 +10,7 @@ interface Props {
   onRestart: () => void;
 }
 
-const STORAGE_KEY = "anchor_streak_days";
+const STORAGE_KEY = "anchor_dates";
 
 function getLocalDays(): string[] {
   try {
@@ -40,10 +40,7 @@ function computeStreak(days: string[]): number {
   for (const d of sorted) {
     const dayDate = new Date(d + "T00:00:00");
     const diff = Math.round((cursor.getTime() - dayDate.getTime()) / 86400000);
-    if (diff === 0) {
-      streak++;
-      cursor = new Date(dayDate.getTime() - 86400000);
-    } else if (diff === 1) {
+    if (diff === 0 || diff === 1) {
       streak++;
       cursor = new Date(dayDate.getTime() - 86400000);
     } else {
@@ -65,11 +62,10 @@ const COLORS = ["#8C7A6B", "#1A1A1A", "#FFFFFF", "#4A7C59"];
 
 export default function DopamineReward({ active, duration, onRestart }: Props) {
   const isMobile = useIsMobile();
-  const { user, isLoading: authLoading, isAuthenticated, login } = useAuth();
+  const { user, isLoading: authLoading, isAuthenticated, login, logout } = useAuth();
   const [completedDays, setCompletedDays] = useState<string[]>([]);
   const [streak, setStreak] = useState(0);
   const [launched, setLaunched] = useState(false);
-  const [syncing, setSyncing] = useState(false);
   const [synced, setSynced] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>(0);
@@ -85,21 +81,14 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
   }, []);
 
   const syncWithServer = useCallback(async () => {
-    setSyncing(true);
     try {
-      const res = await fetch("/api/streak/record", {
-        method: "POST",
-        credentials: "include",
-      });
+      const res = await fetch("/api/streak/record", { method: "POST", credentials: "include" });
       if (res.ok) {
         const data = await res.json() as { days: string[] };
         mergeAndSet(data.days);
         setSynced(true);
       }
-    } catch {
-    } finally {
-      setSyncing(false);
-    }
+    } catch { /* silent */ }
   }, [mergeAndSet]);
 
   const loadServerStreak = useCallback(async () => {
@@ -109,8 +98,7 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
         const data = await res.json() as { days: string[] };
         mergeAndSet(data.days);
       }
-    } catch {
-    }
+    } catch { /* silent */ }
   }, [mergeAndSet]);
 
   useEffect(() => {
@@ -121,7 +109,6 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
       cancelAnimationFrame(animRef.current);
       return;
     }
-
     if (recordedRef.current) return;
     recordedRef.current = true;
 
@@ -184,6 +171,20 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
     return () => cancelAnimationFrame(animRef.current);
   }, [active, isAuthenticated, authLoading, syncWithServer, loadServerStreak]);
 
+  const username = user?.firstName || user?.email?.split("@")[0] || "you";
+
+  const mutedLink: React.CSSProperties = {
+    fontFamily: "'Outfit', sans-serif",
+    fontSize: 13,
+    color: "#A89F97",
+    background: "none",
+    border: "none",
+    padding: 0,
+    cursor: "pointer",
+    textDecoration: "none",
+    transition: "text-decoration 150ms",
+  };
+
   return (
     <div
       className={`screen${active ? " active" : ""}`}
@@ -198,7 +199,7 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
         style={{
           maxWidth: 480,
           width: "100%",
-          padding: isMobile ? "24px 20px 40px" : "32px 24px 48px",
+          padding: isMobile ? "28px 20px 48px" : "36px 24px 56px",
           position: "relative",
           zIndex: 1,
           margin: "0 auto",
@@ -207,6 +208,7 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
           gap: 16,
         }}
       >
+        {/* HERO CARD */}
         <div
           className={launched ? "fade-in-up" : ""}
           style={{
@@ -233,15 +235,7 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
             Anchored.
           </h1>
 
-          <p
-            style={{
-              fontFamily: "var(--font-body)",
-              fontWeight: 400,
-              fontSize: isMobile ? 16 : 18,
-              color: "var(--color-muted)",
-              marginTop: 8,
-            }}
-          >
+          <p style={{ fontFamily: "var(--font-body)", fontWeight: 400, fontSize: isMobile ? 16 : 18, color: "var(--color-muted)", marginTop: 8 }}>
             You showed up for your brain.
           </p>
 
@@ -256,26 +250,49 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
               marginTop: 12,
               padding: "10px 20px",
               borderRadius: 100,
-              background: "rgba(140,122,107,0.1)",
+              background: "rgba(140,122,107,0.10)",
               display: "inline-flex",
               alignItems: "center",
               gap: 8,
             }}
           >
             <span style={{ fontSize: 18 }}>⚓</span>
-            <span
-              style={{
-                fontFamily: "var(--font-heading)",
-                fontWeight: 700,
-                fontSize: 20,
-                color: "var(--color-accent)",
-              }}
-            >
+            <span style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: 20, color: "var(--color-accent)" }}>
               {streak} day streak
             </span>
           </div>
+
+          {/* AUTH SYNC ROW — below streak */}
+          {!authLoading && (
+            <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 8 }}>
+              {isAuthenticated ? (
+                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, color: "#A89F97" }}>
+                  {synced ? `Synced as ${username}` : `Signed in as ${username}`}
+                  {" · "}
+                  <button
+                    style={mutedLink}
+                    onMouseEnter={(e) => { e.currentTarget.style.textDecoration = "underline"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.textDecoration = "none"; }}
+                    onClick={logout}
+                  >
+                    Sign out
+                  </button>
+                </span>
+              ) : (
+                <button
+                  style={mutedLink}
+                  onMouseEnter={(e) => { e.currentTarget.style.textDecoration = "underline"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.textDecoration = "none"; }}
+                  onClick={login}
+                >
+                  Sync streak with your account to save across devices
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
+        {/* CALENDAR */}
         <div
           className={launched ? "fade-in-up" : ""}
           style={{
@@ -286,135 +303,10 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
             border: "var(--border)",
           }}
         >
-          <p
-            style={{
-              fontFamily: "var(--font-heading)",
-              fontWeight: 700,
-              fontSize: 15,
-              color: "var(--color-text)",
-              marginBottom: 16,
-              letterSpacing: "0.03em",
-            }}
-          >
-            Your Streak
-          </p>
           <CalendarStreak completedDays={completedDays} />
         </div>
 
-        {!authLoading && (
-          <div
-            className={launched ? "fade-in-up" : ""}
-            style={{
-              background: "var(--color-surface)",
-              borderRadius: 24,
-              padding: isMobile ? "20px" : "24px 32px",
-              boxShadow: "var(--shadow-card)",
-              border: "var(--border)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 12,
-            }}
-          >
-            {isAuthenticated ? (
-              <>
-                <div>
-                  <p
-                    style={{
-                      fontFamily: "var(--font-body)",
-                      fontWeight: 500,
-                      fontSize: 14,
-                      color: "var(--color-text)",
-                    }}
-                  >
-                    {user?.firstName ? `Hi, ${user.firstName}` : "Signed in"}
-                  </p>
-                  <p
-                    style={{
-                      fontFamily: "var(--font-body)",
-                      fontWeight: 400,
-                      fontSize: 13,
-                      color: "var(--color-muted)",
-                      marginTop: 2,
-                    }}
-                  >
-                    {synced
-                      ? "Streak saved to your account"
-                      : syncing
-                      ? "Saving streak..."
-                      : "Streak synced"}
-                  </p>
-                </div>
-                <div
-                  style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: "50%",
-                    background: synced ? "#4A7C59" : "rgba(140,122,107,0.15)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 16,
-                    flexShrink: 0,
-                    transition: "background 400ms",
-                  }}
-                >
-                  {syncing ? "⟳" : "✓"}
-                </div>
-              </>
-            ) : (
-              <>
-                <div>
-                  <p
-                    style={{
-                      fontFamily: "var(--font-body)",
-                      fontWeight: 500,
-                      fontSize: 14,
-                      color: "var(--color-text)",
-                    }}
-                  >
-                    Save your streak
-                  </p>
-                  <p
-                    style={{
-                      fontFamily: "var(--font-body)",
-                      fontWeight: 400,
-                      fontSize: 13,
-                      color: "var(--color-muted)",
-                      marginTop: 2,
-                    }}
-                  >
-                    Log in to sync across devices
-                  </p>
-                </div>
-                <button
-                  onClick={login}
-                  style={{
-                    padding: "10px 18px",
-                    borderRadius: 100,
-                    background: "#1A1A1A",
-                    color: "#FFFFFF",
-                    fontFamily: "var(--font-heading)",
-                    fontWeight: 600,
-                    fontSize: 13,
-                    letterSpacing: "0.04em",
-                    textTransform: "uppercase",
-                    border: "none",
-                    cursor: "pointer",
-                    whiteSpace: "nowrap",
-                    flexShrink: 0,
-                    transition: "background 200ms",
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = "#333"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = "#1A1A1A"; }}
-                >
-                  Log in
-                </button>
-              </>
-            )}
-          </div>
-        )}
-
+        {/* CTA */}
         <button
           className={launched ? "fade-in-up" : ""}
           onClick={onRestart}
