@@ -297,7 +297,7 @@ export default function MarketingLanding({ active, onStart }: Props) {
         }}>
           <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 16, color: "#1A1A1A", letterSpacing: "-0.01em" }}>Anchor</div>
           <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400, fontSize: 14, color: "#A89F97" }}>Stillness for the restless mind.</div>
-          <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400, fontSize: 14, color: "#A89F97" }}>Free · Open Source · No Sign-up</div>
+          <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400, fontSize: 14, color: "#A89F97" }}>Free forever, open source, for everyone</div>
         </div>
       </footer>
     </div>

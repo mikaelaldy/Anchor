@@ -152,7 +152,7 @@ export default function SensoryLanding({ active, onMoodSelect }: Props) {
             letterSpacing: "0.05em",
           }}
         >
-          Free · Open Source · No Sign-up
+          Free forever, open source, for everyone
         </p>
       </div>
     </div>
