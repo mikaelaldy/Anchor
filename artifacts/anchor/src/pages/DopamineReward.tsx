@@ -59,7 +59,7 @@ interface ConfettiParticle {
 const COLORS = ["#6366F1", "#818CF8", "#10B981", "#0F172A", "#A5B4FC"];
 
 export default function DopamineReward({ active, duration, onRestart }: Props) {
-  const [streak, setStreak] = useState(0);
+  const [streak, setStreak] = useState(1);
   const [launched, setLaunched] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>(0);
@@ -68,6 +68,7 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
   useEffect(() => {
     if (!active) {
       setLaunched(false);
+      cancelAnimationFrame(animRef.current);
       return;
     }
 
@@ -167,6 +168,7 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
         }}
       >
         <div
+          className={launched ? "fade-in-up" : ""}
           style={{
             background: "var(--color-surface)",
             borderRadius: 24,
@@ -178,7 +180,6 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
             alignItems: "center",
             textAlign: "center",
           }}
-          className={launched ? "fade-in-up" : ""}
         >
           <h1
             style={{
@@ -217,19 +218,17 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
             {duration} minutes. Session complete.
           </p>
 
-          {streak > 0 && (
-            <p
-              style={{
-                fontFamily: "var(--font-body)",
-                fontWeight: 500,
-                fontSize: 16,
-                color: "var(--color-text)",
-                marginTop: 8,
-              }}
-            >
-              🔥 {streak} day streak
-            </p>
-          )}
+          <p
+            style={{
+              fontFamily: "var(--font-body)",
+              fontWeight: 500,
+              fontSize: 16,
+              color: "var(--color-text)",
+              marginTop: 8,
+            }}
+          >
+            🔥 {streak} day streak
+          </p>
 
           <div style={{ height: 32 }} />
 

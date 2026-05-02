@@ -5,6 +5,7 @@ interface Props {
   active: boolean;
   mood: Mood;
   onDurationSelect: (duration: Duration) => void;
+  onBack: () => void;
 }
 
 const durations: { value: Duration; label: string }[] = [
@@ -13,7 +14,7 @@ const durations: { value: Duration; label: string }[] = [
   { value: 5, label: "Full anchor" },
 ];
 
-export default function SessionSelector({ active, mood, onDurationSelect }: Props) {
+export default function SessionSelector({ active, mood, onDurationSelect, onBack }: Props) {
   const tileRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const handleSelect = (duration: Duration, index: number, e: React.MouseEvent<HTMLDivElement>) => {
@@ -43,10 +44,28 @@ export default function SessionSelector({ active, mood, onDurationSelect }: Prop
   return (
     <div
       className={`screen${active ? " active" : ""}`}
-      style={{
-        background: "var(--color-bg)",
-      }}
+      style={{ background: "var(--color-bg)" }}
     >
+      <button
+        onClick={onBack}
+        style={{
+          position: "fixed",
+          top: 24,
+          left: 32,
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          fontFamily: "var(--font-body)",
+          fontWeight: 500,
+          fontSize: 14,
+          color: "var(--color-muted)",
+          padding: 0,
+          zIndex: 10,
+        }}
+      >
+        ← Back
+      </button>
+
       <div
         style={{
           maxWidth: 900,

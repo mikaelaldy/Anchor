@@ -1,0 +1,56 @@
+The app is partially working — timer runs but several core features are missing. 
+Fix all of these without changing any existing design, colors, or layout:
+
+## 1. BACK BUTTON
+- On Screen 2 (Session Selector): add a back button top-left corner. 
+  Text: "← Back". Outfit 500 14px #94A3B8. No background, no border.
+  Click: returns to Screen 1 (Sensory Landing).
+
+- On Screen 3 (Kinetic Player): add a back button top-left corner.
+  Same style. Click: stops timer, returns to Screen 2.
+
+## 2. PAUSE BUTTON
+- On Screen 3 (Kinetic Player): add a pause/resume button bottom-center.
+  Pill shape, padding 12px 32px, border-radius 100px.
+  Background #FFFFFF, border 1px solid rgba(15,23,42,0.12), 
+  box-shadow 0 2px 8px rgba(15,23,42,0.06).
+  Text: "Pause" / toggles to "Resume" — Space Grotesk 600 15px #0F172A uppercase.
+  Behavior: pauses the countdown timer AND freezes the breath node animation.
+  Resume: continues from where it left off (not reset).
+  Spacebar should also toggle pause/resume (already specced, make sure it works).
+
+## 3. STREAK TRACKING
+- On Screen 4 (Dopamine Reward): correctly read and display streak from localStorage.
+  Key: "anchor_streak" stored as JSON: { count: N, lastDate: "YYYY-MM-DD" }
+  Logic:
+    - If lastDate === today → don't increment, show current count.
+    - If lastDate === yesterday → increment count by 1.
+    - Anything else → reset count to 1.
+    - Always update lastDate to today on session complete.
+  Display: "🔥 [N] day streak" — Outfit 500 16px #0F172A.
+  First time (no key in localStorage): show "🔥 1 day streak".
+
+## 4. BREATHING INSTRUCTION SYNC
+- Make sure the text inside the breath node ("Inhale" / "Hold" / "Exhale") 
+  is actually synced to the animation phase:
+    - Inhale: 0–4s → text "Inhale"
+    - Hold: 4–8s → text "Hold"
+    - Exhale: 8–14s → text "Exhale"
+  Loop repeats. Text fades in/out (opacity transition 300ms) on each phase change.
+  Pause freezes text too.
+
+## 5. SESSION COMPLETION
+- When timer hits 0:
+  - Breath node fades out (opacity 0, scale 1.5, transition 800ms).
+  - After 800ms: auto-navigate to Screen 4.
+  - Trigger confetti burst on Screen 4 mount.
+  - Update streak in localStorage at this point.
+
+## 6. TIMER DISPLAY
+- Timer should count DOWN visibly (not just the progress ring).
+  Format: "0:59", "0:30", "1:00" etc.
+  Position: top-right corner below the session label.
+  Outfit 500 16px #0F172A.
+  Pausing freezes the displayed number too.
+
+Do not change any colors, fonts, layout, or design. Only add the missing functionality.

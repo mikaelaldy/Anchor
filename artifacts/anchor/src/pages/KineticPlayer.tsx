@@ -6,6 +6,7 @@ interface Props {
   mood: Mood;
   duration: Duration;
   onComplete: () => void;
+  onBack: () => void;
 }
 
 interface Particle {
@@ -33,21 +34,31 @@ function getPhase(elapsed: number): BreathPhase {
   return "Exhale";
 }
 
-export default function KineticPlayer({ active, mood, duration, onComplete }: Props) {
+export default function KineticPlayer({ active, mood, duration, onComplete, onBack }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const animFrameRef = useRef<number>(0);
+
   const [phase, setPhase] = useState<BreathPhase>("Inhale");
+  const [phaseVisible, setPhaseVisible] = useState(true);
+  const prevPhaseRef = useRef<BreathPhase>("Inhale");
+
   const [paused, setPaused] = useState(false);
   const [timeLeft, setTimeLeft] = useState(duration * 60);
   const [progress, setProgress] = useState(0);
+  const [nodeVisible, setNodeVisible] = useState(true);
+
   const pausedRef = useRef(false);
-  const startTimeRef = useRef<number | null>(null);
-  const pausedAtRef = useRef<number>(0);
   const elapsedRef = useRef(0);
   const completedRef = useRef(false);
 
   const totalMs = duration * 60 * 1000;
+
+  const togglePause = useCallback(() => {
+    const next = !pausedRef.current;
+    pausedRef.current = next;
+    setPaused(next);
+  }, []);
 
   const spawnParticles = useCallback((x: number, y: number) => {
     for (let i = 0; i < 4; i++) {
@@ -69,7 +80,6 @@ export default function KineticPlayer({ active, mood, duration, onComplete }: Pr
 
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -87,10 +97,6 @@ export default function KineticPlayer({ active, mood, duration, onComplete }: Pr
       lastTime = now;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      if (!pausedRef.current) {
-        elapsedRef.current += dt;
-      }
 
       const particles = particlesRef.current;
       for (let i = particles.length - 1; i >= 0; i--) {
@@ -128,32 +134,44 @@ export default function KineticPlayer({ active, mood, duration, onComplete }: Pr
     if (!active) {
       completedRef.current = false;
       pausedRef.current = false;
+      elapsedRef.current = 0;
       setPaused(false);
       setTimeLeft(duration * 60);
       setProgress(0);
       setPhase("Inhale");
-      startTimeRef.current = null;
-      elapsedRef.current = 0;
+      prevPhaseRef.current = "Inhale";
+      setPhaseVisible(true);
+      setNodeVisible(true);
       return;
     }
 
-    startTimeRef.current = Date.now();
     elapsedRef.current = 0;
 
     const interval = setInterval(() => {
       if (pausedRef.current) return;
 
+      elapsedRef.current += 100;
       const elapsed = elapsedRef.current;
       const remaining = Math.max(0, totalMs - elapsed);
       const secs = Math.ceil(remaining / 1000);
 
       setTimeLeft(secs);
       setProgress(Math.min(elapsed / totalMs, 1));
-      setPhase(getPhase(elapsed));
+
+      const newPhase = getPhase(elapsed);
+      if (newPhase !== prevPhaseRef.current) {
+        prevPhaseRef.current = newPhase;
+        setPhaseVisible(false);
+        setTimeout(() => {
+          setPhase(newPhase);
+          setPhaseVisible(true);
+        }, 150);
+      }
 
       if (elapsed >= totalMs && !completedRef.current) {
         completedRef.current = true;
         clearInterval(interval);
+        setNodeVisible(false);
         setTimeout(() => {
           onComplete();
         }, 800);
@@ -169,15 +187,13 @@ export default function KineticPlayer({ active, mood, duration, onComplete }: Pr
     const handleKey = (e: KeyboardEvent) => {
       if (e.code === "Space") {
         e.preventDefault();
-        const next = !pausedRef.current;
-        pausedRef.current = next;
-        setPaused(next);
+        togglePause();
       }
     };
 
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [active]);
+  }, [active, togglePause]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (pausedRef.current) return;
@@ -214,6 +230,26 @@ export default function KineticPlayer({ active, mood, duration, onComplete }: Pr
         }}
       />
 
+      <button
+        onClick={onBack}
+        style={{
+          position: "fixed",
+          top: 24,
+          left: 32,
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          fontFamily: "var(--font-body)",
+          fontWeight: 500,
+          fontSize: 14,
+          color: "var(--color-muted)",
+          padding: 0,
+          zIndex: 10,
+        }}
+      >
+        ← Back
+      </button>
+
       <div
         style={{
           position: "fixed",
@@ -238,14 +274,7 @@ export default function KineticPlayer({ active, mood, duration, onComplete }: Pr
           style={{ position: "absolute" }}
           viewBox="0 0 500 500"
         >
-          <circle
-            cx={250}
-            cy={250}
-            r={230}
-            fill="none"
-            stroke="#E2E8F0"
-            strokeWidth={2}
-          />
+          <circle cx={250} cy={250} r={230} fill="none" stroke="#E2E8F0" strokeWidth={2} />
           <circle
             cx={250}
             cy={250}
@@ -275,6 +304,9 @@ export default function KineticPlayer({ active, mood, duration, onComplete }: Pr
             animationPlayState: paused ? "paused" : "running",
             position: "relative",
             zIndex: 2,
+            opacity: nodeVisible ? 1 : 0,
+            transform: nodeVisible ? "scale(1)" : "scale(1.5)",
+            transition: "opacity 800ms ease-out, transform 800ms ease-out",
           }}
         >
           <span
@@ -283,6 +315,8 @@ export default function KineticPlayer({ active, mood, duration, onComplete }: Pr
               fontWeight: 500,
               fontSize: 16,
               color: "var(--color-text)",
+              opacity: phaseVisible ? 1 : 0,
+              transition: "opacity 150ms ease-out",
             }}
           >
             {paused ? "Paused" : phase}
@@ -290,30 +324,44 @@ export default function KineticPlayer({ active, mood, duration, onComplete }: Pr
         </div>
       </div>
 
-      {paused && (
-        <div
+      <div
+        style={{
+          position: "fixed",
+          bottom: 40,
+          left: 0,
+          right: 0,
+          display: "flex",
+          justifyContent: "center",
+          zIndex: 10,
+        }}
+      >
+        <button
+          onClick={togglePause}
           style={{
-            position: "fixed",
-            bottom: 80,
-            left: 0,
-            right: 0,
-            display: "flex",
-            justifyContent: "center",
-            zIndex: 10,
+            padding: "12px 32px",
+            borderRadius: "100px",
+            background: "#FFFFFF",
+            border: "1px solid rgba(15,23,42,0.12)",
+            boxShadow: "0 2px 8px rgba(15,23,42,0.06)",
+            fontFamily: "var(--font-heading)",
+            fontWeight: 600,
+            fontSize: 15,
+            color: "var(--color-text)",
+            letterSpacing: "0.05em",
+            textTransform: "uppercase",
+            cursor: "pointer",
+            transition: "box-shadow 200ms",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow = "0 4px 16px rgba(15,23,42,0.1)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = "0 2px 8px rgba(15,23,42,0.06)";
           }}
         >
-          <p
-            style={{
-              fontFamily: "var(--font-body)",
-              fontWeight: 500,
-              fontSize: 18,
-              color: "var(--color-text)",
-            }}
-          >
-            Paused — press space to continue
-          </p>
-        </div>
-      )}
+          {paused ? "Resume" : "Pause"}
+        </button>
+      </div>
     </div>
   );
 }

@@ -55,12 +55,14 @@ export default function App() {
             setDuration(d);
             setScreen("player");
           }}
+          onBack={() => setScreen("landing")}
         />
         <KineticPlayer
           active={screen === "player"}
           mood={mood}
           duration={duration}
           onComplete={() => setScreen("reward")}
+          onBack={() => setScreen("selector")}
         />
         <DopamineReward
           active={screen === "reward"}
