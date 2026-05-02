@@ -49,7 +49,7 @@ interface ConfettiParticle {
   alpha: number;
 }
 
-const COLORS = ["#6366F1", "#818CF8", "#10B981", "#0F172A", "#A5B4FC"];
+const COLORS = ["#8C7A6B", "#1A1A1A", "#FFFFFF", "#4A7C59"];
 
 export default function DopamineReward({ active, duration, onRestart }: Props) {
   const isMobile = useIsMobile();
@@ -145,8 +145,8 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
             background: "var(--color-surface)",
             borderRadius: 24,
             padding: isMobile ? "32px 24px" : 48,
-            boxShadow: "0 24px 48px rgba(15,23,42,0.1)",
-            border: "var(--border-light)",
+            boxShadow: "var(--shadow-card)",
+            border: "var(--border)",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -184,7 +184,7 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
           </p>
 
           <p style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 16, color: "var(--color-text)", marginTop: 8 }}>
-            🔥 {streak} day streak
+            {streak} day streak
           </p>
 
           <div style={{ height: 32 }} />
@@ -195,7 +195,7 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
               width: "100%",
               padding: "16px",
               borderRadius: "100px",
-              background: "var(--color-primary)",
+              background: "#1A1A1A",
               color: "#FFFFFF",
               fontFamily: "var(--font-heading)",
               fontWeight: 600,
@@ -204,16 +204,16 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
               textTransform: "uppercase",
               border: "none",
               cursor: "pointer",
-              boxShadow: "0 4px 16px rgba(99,102,241,0.3)",
+              boxShadow: "0 4px 16px rgba(26,26,26,0.15)",
               transition: "background 200ms, box-shadow 200ms",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = "#4F46E5";
-              e.currentTarget.style.boxShadow = "0 8px 24px rgba(99,102,241,0.4)";
+              e.currentTarget.style.background = "#333333";
+              e.currentTarget.style.boxShadow = "0 8px 24px rgba(26,26,26,0.2)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = "var(--color-primary)";
-              e.currentTarget.style.boxShadow = "0 4px 16px rgba(99,102,241,0.3)";
+              e.currentTarget.style.background = "#1A1A1A";
+              e.currentTarget.style.boxShadow = "0 4px 16px rgba(26,26,26,0.15)";
             }}
           >
             Back to the noise.

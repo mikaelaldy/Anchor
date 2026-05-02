@@ -1,0 +1,90 @@
+Restyle the entire app. Do not change any functionality, 
+layout structure, or screen logic. Only update visual styling.
+
+## NEW DESIGN SYSTEM
+
+Replace ALL existing colors with these:
+
+```css
+:root {
+  --color-bg: #F5F4F0;
+  --color-surface: #FFFFFF;
+  --color-text: #1A1A1A;
+  --color-muted: #A89F97;
+  --color-accent: #8C7A6B;
+  --color-cta: #1A1A1A;
+  --color-cta-text: #FFFFFF;
+  --color-success: #4A7C59;
+  --border: 1px solid rgba(26, 26, 26, 0.10);
+  --shadow: 0 4px 24px rgba(26, 26, 26, 0.06);
+  --shadow-card: 0 8px 32px rgba(26, 26, 26, 0.08);
+}
+```
+
+## GLOBAL RULES
+
+- Background everywhere: #F5F4F0
+- No indigo. No purple. No blue. Remove every instance of #6366F1, #818CF8, #4F46E5.
+- No emojis anywhere in the UI. Replace "🔥 N day streak" with plain text: "N day streak".
+- All borders: rgba(26, 26, 26, 0.10) — no colored borders.
+- Shadows: rgba(26,26,26,0.06) — warm-tinted, never blue-tinted.
+- Subtle background gradient on landing: 
+  radial-gradient(ellipse at 60% 40%, rgba(140,122,107,0.06), transparent 60%)
+
+## SCREEN 1 — SENSORY LANDING
+
+- Logo "Anchor": Space Grotesk 700 48px #1A1A1A
+- Tagline: Outfit 400 18px #A89F97
+- Prompt text: Outfit 400 18px #1A1A1A
+- Mood pills:
+  Background #FFFFFF, border var(--border), text #1A1A1A, 
+  box-shadow var(--shadow).
+  Hover: background #1A1A1A, text #FFFFFF, border-color #1A1A1A.
+- Footer text "Free · Open Source · No Sign-up": Outfit 13px #A89F97
+
+## SCREEN 2 — SESSION SELECTOR
+
+- "You're feeling [MOOD]." — #1A1A1A
+- "Let's ground." and helper text — #A89F97
+- Duration tiles:
+  Background #FFFFFF, border var(--border), shadow var(--shadow-card).
+  Big number: Space Grotesk 700 48px #1A1A1A (not colored).
+  Label: Outfit 400 16px #A89F97.
+  Hover: border-color #1A1A1A, shadow 0 8px 32px rgba(26,26,26,0.12), translateY(-4px).
+  Ripple on click: rgba(26,26,26,0.06).
+- Back button: Outfit 500 14px #A89F97
+
+## SCREEN 3 — KINETIC PLAYER
+
+- Background: #F5F4F0
+- Breath node:
+  background: radial-gradient(circle, rgba(140,122,107,0.12), rgba(140,122,107,0.04))
+  border: 2px solid rgba(140,122,107,0.2)
+  box-shadow: 0 0 60px rgba(140,122,107,0.10), 0 0 120px rgba(140,122,107,0.05)
+- Breathing text inside node ("Inhale/Hold/Exhale"): Outfit 500 16px #1A1A1A
+- Particle trail color: #8C7A6B fading to transparent
+- Progress ring track: #E5E3DE, stroke 2px
+- Progress ring fill: #1A1A1A, stroke 2px
+- Session label top-right: Outfit 13px #A89F97
+- Timer top-right: Outfit 500 16px #1A1A1A
+- Pause button:
+  Background #FFFFFF, border var(--border), text #1A1A1A, shadow var(--shadow).
+  Hover: background #1A1A1A, text #FFFFFF.
+- Back button: Outfit 500 14px #A89F97
+- Pause overlay: background rgba(245,244,240,0.92), text #1A1A1A
+
+## SCREEN 4 — DOPAMINE REWARD
+
+- Background: #F5F4F0
+- Card: background #FFFFFF, border var(--border), shadow var(--shadow-card)
+- "Anchored." title: Space Grotesk 700 48px #1A1A1A
+- Subtitle: Outfit 400 18px #A89F97
+- Stat strip: Outfit 16px #A89F97
+- Streak text: "N day streak" — Outfit 500 16px #1A1A1A. No emoji.
+- CTA button "Back to the noise.":
+  Background #1A1A1A, text #FFFFFF, border none,
+  box-shadow 0 4px 16px rgba(26,26,26,0.15).
+  Hover: background #333333, shadow 0 8px 24px rgba(26,26,26,0.2).
+- Confetti colors: #8C7A6B, #1A1A1A, #FFFFFF, #4A7C59
+
+Apply all changes now. No layout or functionality changes whatsoever.

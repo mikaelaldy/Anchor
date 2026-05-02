@@ -29,7 +29,7 @@ export default function SensoryLanding({ active, onMoodSelect }: Props) {
         style={{
           position: "absolute",
           inset: 0,
-          background: "radial-gradient(ellipse at 60% 40%, rgba(99,102,241,0.06), transparent 60%)",
+          background: "radial-gradient(ellipse at 60% 40%, rgba(140,122,107,0.06), transparent 60%)",
           pointerEvents: "none",
         }}
       />
@@ -56,7 +56,7 @@ export default function SensoryLanding({ active, onMoodSelect }: Props) {
             letterSpacing: "-0.02em",
           }}
         >
-          ⚓ Anchor
+          Anchor
         </div>
 
         <p
@@ -104,27 +104,27 @@ export default function SensoryLanding({ active, onMoodSelect }: Props) {
                 width: isMobile ? "100%" : "auto",
                 borderRadius: "100px",
                 background: "var(--color-surface)",
-                border: "1px solid rgba(15,23,42,0.12)",
+                border: "var(--border)",
                 color: "var(--color-text)",
                 fontFamily: "var(--font-heading)",
                 fontWeight: 600,
                 fontSize: 15,
                 letterSpacing: "0.05em",
                 textTransform: "uppercase",
-                boxShadow: "0 2px 8px rgba(15,23,42,0.06)",
+                boxShadow: "var(--shadow)",
                 cursor: "pointer",
                 transition: "background 200ms, border-color 200ms, color 200ms, transform 150ms",
               }}
               onMouseEnter={(e) => {
                 const t = e.currentTarget;
-                t.style.background = "var(--color-primary)";
-                t.style.borderColor = "var(--color-primary)";
+                t.style.background = "#1A1A1A";
+                t.style.borderColor = "#1A1A1A";
                 t.style.color = "#FFFFFF";
               }}
               onMouseLeave={(e) => {
                 const t = e.currentTarget;
                 t.style.background = "var(--color-surface)";
-                t.style.borderColor = "rgba(15,23,42,0.12)";
+                t.style.borderColor = "rgba(26,26,26,0.10)";
                 t.style.color = "var(--color-text)";
               }}
             >

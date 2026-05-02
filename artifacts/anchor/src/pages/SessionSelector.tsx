@@ -139,20 +139,20 @@ export default function SessionSelector({ active, mood, onDurationSelect, onBack
                 padding: isMobile ? "20px 24px" : 32,
                 borderRadius: 24,
                 background: "var(--color-surface)",
-                border: "var(--border-light)",
+                border: "var(--border)",
                 boxShadow: "var(--shadow-card)",
                 cursor: "pointer",
                 transition: "border-color 200ms, box-shadow 200ms, transform 200ms",
               }}
               onMouseEnter={(e) => {
                 const t = e.currentTarget;
-                t.style.borderColor = "var(--color-primary)";
-                t.style.boxShadow = "0 8px 32px rgba(99,102,241,0.15)";
+                t.style.borderColor = "#1A1A1A";
+                t.style.boxShadow = "0 8px 32px rgba(26,26,26,0.12)";
                 t.style.transform = "translateY(-4px)";
               }}
               onMouseLeave={(e) => {
                 const t = e.currentTarget;
-                t.style.borderColor = "rgba(15,23,42,0.08)";
+                t.style.borderColor = "rgba(26,26,26,0.10)";
                 t.style.boxShadow = "var(--shadow-card)";
                 t.style.transform = "translateY(0)";
               }}
@@ -162,7 +162,7 @@ export default function SessionSelector({ active, mood, onDurationSelect, onBack
                   fontFamily: "var(--font-heading)",
                   fontWeight: 700,
                   fontSize: isMobile ? 36 : 48,
-                  color: "var(--color-primary)",
+                  color: "var(--color-text)",
                   lineHeight: 1,
                 }}
               >
