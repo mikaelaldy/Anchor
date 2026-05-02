@@ -1,4 +1,5 @@
 import { Mood } from "@/App";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 interface Props {
   active: boolean;
@@ -8,6 +9,8 @@ interface Props {
 const moods: Mood[] = ["Scattered", "Paralyzed", "Buzzing"];
 
 export default function SensoryLanding({ active, onMoodSelect }: Props) {
+  const isMobile = useIsMobile();
+
   const handleMoodClick = (mood: Mood, e: React.MouseEvent<HTMLButtonElement>) => {
     const btn = e.currentTarget;
     btn.style.transform = "scale(0.95)";
@@ -20,9 +23,7 @@ export default function SensoryLanding({ active, onMoodSelect }: Props) {
   return (
     <div
       className={`screen${active ? " active" : ""}`}
-      style={{
-        background: "var(--color-bg)",
-      }}
+      style={{ background: "var(--color-bg)" }}
     >
       <div
         style={{
@@ -37,7 +38,7 @@ export default function SensoryLanding({ active, onMoodSelect }: Props) {
         style={{
           maxWidth: 800,
           width: "100%",
-          padding: "0 32px",
+          padding: isMobile ? "0 24px" : "0 32px",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -50,7 +51,7 @@ export default function SensoryLanding({ active, onMoodSelect }: Props) {
           style={{
             fontFamily: "var(--font-heading)",
             fontWeight: 700,
-            fontSize: 48,
+            fontSize: isMobile ? 36 : 48,
             color: "var(--color-text)",
             letterSpacing: "-0.02em",
           }}
@@ -62,7 +63,7 @@ export default function SensoryLanding({ active, onMoodSelect }: Props) {
           style={{
             fontFamily: "var(--font-body)",
             fontWeight: 400,
-            fontSize: 18,
+            fontSize: isMobile ? 16 : 18,
             color: "var(--color-muted)",
             marginTop: 12,
           }}
@@ -70,13 +71,13 @@ export default function SensoryLanding({ active, onMoodSelect }: Props) {
           Stillness for the restless mind.
         </p>
 
-        <div style={{ height: 48 }} />
+        <div style={{ height: isMobile ? 36 : 48 }} />
 
         <p
           style={{
             fontFamily: "var(--font-body)",
             fontWeight: 400,
-            fontSize: 18,
+            fontSize: isMobile ? 16 : 18,
             color: "var(--color-text)",
           }}
         >
@@ -86,12 +87,12 @@ export default function SensoryLanding({ active, onMoodSelect }: Props) {
         <div
           style={{
             display: "flex",
-            flexDirection: "row",
+            flexDirection: isMobile ? "column" : "row",
             alignItems: "center",
             justifyContent: "center",
-            gap: 16,
+            gap: 12,
             marginTop: 24,
-            flexWrap: "wrap",
+            width: isMobile ? "100%" : "auto",
           }}
         >
           {moods.map((mood) => (
@@ -99,7 +100,8 @@ export default function SensoryLanding({ active, onMoodSelect }: Props) {
               key={mood}
               onClick={(e) => handleMoodClick(mood, e)}
               style={{
-                padding: "12px 24px",
+                padding: isMobile ? "14px 0" : "12px 24px",
+                width: isMobile ? "100%" : "auto",
                 borderRadius: "100px",
                 background: "var(--color-surface)",
                 border: "1px solid rgba(15,23,42,0.12)",

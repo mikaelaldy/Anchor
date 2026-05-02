@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { Mood, Duration } from "@/App";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 interface Props {
   active: boolean;
@@ -15,6 +16,7 @@ const durations: { value: Duration; label: string }[] = [
 ];
 
 export default function SessionSelector({ active, mood, onDurationSelect, onBack }: Props) {
+  const isMobile = useIsMobile();
   const tileRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const handleSelect = (duration: Duration, index: number, e: React.MouseEvent<HTMLDivElement>) => {
@@ -44,14 +46,19 @@ export default function SessionSelector({ active, mood, onDurationSelect, onBack
   return (
     <div
       className={`screen${active ? " active" : ""}`}
-      style={{ background: "var(--color-bg)" }}
+      style={{
+        background: "var(--color-bg)",
+        overflowY: "auto",
+        alignItems: isMobile ? "flex-start" : "center",
+        justifyContent: isMobile ? "flex-start" : "center",
+      }}
     >
       <button
         onClick={onBack}
         style={{
           position: "fixed",
-          top: 24,
-          left: 32,
+          top: 20,
+          left: isMobile ? 20 : 32,
           background: "none",
           border: "none",
           cursor: "pointer",
@@ -70,11 +77,11 @@ export default function SessionSelector({ active, mood, onDurationSelect, onBack
         style={{
           maxWidth: 900,
           width: "100%",
-          padding: "0 32px",
+          padding: isMobile ? "80px 24px 40px" : "0 32px",
           display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 48,
+          flexDirection: isMobile ? "column" : "row",
+          alignItems: isMobile ? "flex-start" : "center",
+          gap: isMobile ? 32 : 48,
         }}
       >
         <div style={{ flex: 1 }}>
@@ -82,7 +89,7 @@ export default function SessionSelector({ active, mood, onDurationSelect, onBack
             style={{
               fontFamily: "var(--font-heading)",
               fontWeight: 700,
-              fontSize: 32,
+              fontSize: isMobile ? 26 : 32,
               color: "var(--color-text)",
               lineHeight: 1.2,
             }}
@@ -93,7 +100,7 @@ export default function SessionSelector({ active, mood, onDurationSelect, onBack
             style={{
               fontFamily: "var(--font-body)",
               fontWeight: 400,
-              fontSize: 18,
+              fontSize: isMobile ? 16 : 18,
               color: "var(--color-muted)",
               marginTop: 8,
             }}
@@ -106,7 +113,7 @@ export default function SessionSelector({ active, mood, onDurationSelect, onBack
               fontWeight: 400,
               fontSize: 16,
               color: "var(--color-muted)",
-              marginTop: 24,
+              marginTop: 16,
             }}
           >
             Choose how long you have.
@@ -118,7 +125,8 @@ export default function SessionSelector({ active, mood, onDurationSelect, onBack
             flex: 1,
             display: "flex",
             flexDirection: "column",
-            gap: 16,
+            gap: 12,
+            width: isMobile ? "100%" : "auto",
           }}
         >
           {durations.map(({ value, label }, i) => (
@@ -128,7 +136,7 @@ export default function SessionSelector({ active, mood, onDurationSelect, onBack
               onClick={(e) => handleSelect(value, i, e)}
               style={{
                 width: "100%",
-                padding: 32,
+                padding: isMobile ? "20px 24px" : 32,
                 borderRadius: 24,
                 background: "var(--color-surface)",
                 border: "var(--border-light)",
@@ -153,7 +161,7 @@ export default function SessionSelector({ active, mood, onDurationSelect, onBack
                 style={{
                   fontFamily: "var(--font-heading)",
                   fontWeight: 700,
-                  fontSize: 48,
+                  fontSize: isMobile ? 36 : 48,
                   color: "var(--color-primary)",
                   lineHeight: 1,
                 }}
@@ -164,7 +172,7 @@ export default function SessionSelector({ active, mood, onDurationSelect, onBack
                 style={{
                   fontFamily: "var(--font-body)",
                   fontWeight: 400,
-                  fontSize: 16,
+                  fontSize: 15,
                   color: "var(--color-muted)",
                   marginTop: 4,
                 }}

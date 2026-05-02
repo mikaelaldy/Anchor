@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Mood, Duration } from "@/App";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 interface Props {
   active: boolean;
@@ -35,6 +36,7 @@ function getPhase(elapsed: number): BreathPhase {
 }
 
 export default function KineticPlayer({ active, mood, duration, onComplete, onBack }: Props) {
+  const isMobile = useIsMobile();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const animFrameRef = useRef<number>(0);
@@ -53,6 +55,13 @@ export default function KineticPlayer({ active, mood, duration, onComplete, onBa
   const completedRef = useRef(false);
 
   const totalMs = duration * 60 * 1000;
+
+  // Responsive sizes
+  const nodeSize = isMobile ? Math.min(window.innerWidth * 0.58, 260) : 300;
+  const ringSize = isMobile ? Math.min(window.innerWidth * 0.95, 380) : 500;
+  const ringRadius = (ringSize / 500) * 230;
+  const circumference = 2 * Math.PI * ringRadius;
+  const strokeDash = circumference * (1 - progress);
 
   const togglePause = useCallback(() => {
     const next = !pausedRef.current;
@@ -77,7 +86,6 @@ export default function KineticPlayer({ active, mood, duration, onComplete, onBa
 
   useEffect(() => {
     if (!active) return;
-
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -91,11 +99,9 @@ export default function KineticPlayer({ active, mood, duration, onComplete, onBa
     window.addEventListener("resize", resize);
 
     let lastTime = performance.now();
-
     const loop = (now: number) => {
       const dt = now - lastTime;
       lastTime = now;
-
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const particles = particlesRef.current;
@@ -107,21 +113,14 @@ export default function KineticPlayer({ active, mood, duration, onComplete, onBa
         p.y += p.vy;
         p.vx *= 0.98;
         p.vy *= 0.98;
-
-        if (p.life >= p.maxLife) {
-          particles.splice(i, 1);
-          continue;
-        }
-
+        if (p.life >= p.maxLife) { particles.splice(i, 1); continue; }
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size * (1 - p.life / p.maxLife), 0, Math.PI * 2);
         ctx.fillStyle = `rgba(99,102,241,${p.alpha * 0.7})`;
         ctx.fill();
       }
-
       animFrameRef.current = requestAnimationFrame(loop);
     };
-
     animFrameRef.current = requestAnimationFrame(loop);
 
     return () => {
@@ -146,35 +145,26 @@ export default function KineticPlayer({ active, mood, duration, onComplete, onBa
     }
 
     elapsedRef.current = 0;
-
     const interval = setInterval(() => {
       if (pausedRef.current) return;
-
       elapsedRef.current += 100;
       const elapsed = elapsedRef.current;
       const remaining = Math.max(0, totalMs - elapsed);
-      const secs = Math.ceil(remaining / 1000);
-
-      setTimeLeft(secs);
+      setTimeLeft(Math.ceil(remaining / 1000));
       setProgress(Math.min(elapsed / totalMs, 1));
 
       const newPhase = getPhase(elapsed);
       if (newPhase !== prevPhaseRef.current) {
         prevPhaseRef.current = newPhase;
         setPhaseVisible(false);
-        setTimeout(() => {
-          setPhase(newPhase);
-          setPhaseVisible(true);
-        }, 150);
+        setTimeout(() => { setPhase(newPhase); setPhaseVisible(true); }, 150);
       }
 
       if (elapsed >= totalMs && !completedRef.current) {
         completedRef.current = true;
         clearInterval(interval);
         setNodeVisible(false);
-        setTimeout(() => {
-          onComplete();
-        }, 800);
+        setTimeout(() => onComplete(), 800);
       }
     }, 100);
 
@@ -183,14 +173,9 @@ export default function KineticPlayer({ active, mood, duration, onComplete, onBa
 
   useEffect(() => {
     if (!active) return;
-
     const handleKey = (e: KeyboardEvent) => {
-      if (e.code === "Space") {
-        e.preventDefault();
-        togglePause();
-      }
+      if (e.code === "Space") { e.preventDefault(); togglePause(); }
     };
-
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, [active, togglePause]);
@@ -200,42 +185,41 @@ export default function KineticPlayer({ active, mood, duration, onComplete, onBa
     spawnParticles(e.clientX, e.clientY);
   }, [spawnParticles]);
 
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (pausedRef.current) return;
+    const t = e.touches[0];
+    if (t) spawnParticles(t.clientX, t.clientY);
+  }, [spawnParticles]);
+
   const formatTime = (secs: number) => {
     const m = Math.floor(secs / 60);
     const s = secs % 60;
     return `${m}:${s.toString().padStart(2, "0")}`;
   };
 
-  const circumference = 2 * Math.PI * 230;
-  const strokeDash = circumference * (1 - progress);
-
   return (
     <div
       className={`screen${active ? " active" : ""}`}
       style={{
         background: paused ? "rgba(250,251,255,0.97)" : "var(--color-bg)",
-        cursor: "none",
+        cursor: isMobile ? "default" : "none",
         userSelect: "none",
         transition: "background 400ms",
       }}
-      onMouseMove={handleMouseMove}
+      onMouseMove={isMobile ? undefined : handleMouseMove}
+      onTouchMove={isMobile ? handleTouchMove : undefined}
     >
       <canvas
         ref={canvasRef}
-        style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 0,
-          pointerEvents: "none",
-        }}
+        style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none" }}
       />
 
       <button
         onClick={onBack}
         style={{
           position: "fixed",
-          top: 24,
-          left: 32,
+          top: isMobile ? 16 : 24,
+          left: isMobile ? 20 : 32,
           background: "none",
           border: "none",
           cursor: "pointer",
@@ -253,37 +237,35 @@ export default function KineticPlayer({ active, mood, duration, onComplete, onBa
       <div
         style={{
           position: "fixed",
-          top: 24,
-          right: 32,
+          top: isMobile ? 16 : 24,
+          right: isMobile ? 20 : 32,
           textAlign: "right",
           zIndex: 10,
         }}
       >
-        <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--color-muted)" }}>
+        <p style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "var(--color-muted)" }}>
           {mood} · {duration} min
         </p>
-        <p style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 16, color: "var(--color-text)", marginTop: 4 }}>
+        <p style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 16, color: "var(--color-text)", marginTop: 2 }}>
           {formatTime(timeLeft)}
         </p>
       </div>
 
       <div style={{ position: "relative", zIndex: 5, display: "flex", alignItems: "center", justifyContent: "center" }}>
         <svg
-          width={500}
-          height={500}
+          width={ringSize}
+          height={ringSize}
           style={{ position: "absolute" }}
           viewBox="0 0 500 500"
         >
           <circle cx={250} cy={250} r={230} fill="none" stroke="#E2E8F0" strokeWidth={2} />
           <circle
-            cx={250}
-            cy={250}
-            r={230}
+            cx={250} cy={250} r={230}
             fill="none"
             stroke="var(--color-primary)"
             strokeWidth={2}
-            strokeDasharray={circumference}
-            strokeDashoffset={strokeDash}
+            strokeDasharray={circumference * (500 / ringSize)}
+            strokeDashoffset={strokeDash * (500 / ringSize)}
             strokeLinecap="round"
             transform="rotate(-90 250 250)"
             style={{ transition: "stroke-dashoffset 200ms linear" }}
@@ -293,8 +275,8 @@ export default function KineticPlayer({ active, mood, duration, onComplete, onBa
         <div
           className="breath-node"
           style={{
-            width: 300,
-            height: 300,
+            width: nodeSize,
+            height: nodeSize,
             background: "radial-gradient(circle, rgba(99,102,241,0.15), rgba(129,140,248,0.05))",
             border: "2px solid rgba(99,102,241,0.2)",
             boxShadow: "0 0 60px rgba(99,102,241,0.12), 0 0 120px rgba(99,102,241,0.06)",
@@ -313,7 +295,7 @@ export default function KineticPlayer({ active, mood, duration, onComplete, onBa
             style={{
               fontFamily: "var(--font-body)",
               fontWeight: 500,
-              fontSize: 16,
+              fontSize: isMobile ? 14 : 16,
               color: "var(--color-text)",
               opacity: phaseVisible ? 1 : 0,
               transition: "opacity 150ms ease-out",
@@ -327,7 +309,7 @@ export default function KineticPlayer({ active, mood, duration, onComplete, onBa
       <div
         style={{
           position: "fixed",
-          bottom: 40,
+          bottom: isMobile ? 32 : 40,
           left: 0,
           right: 0,
           display: "flex",
@@ -338,7 +320,7 @@ export default function KineticPlayer({ active, mood, duration, onComplete, onBa
         <button
           onClick={togglePause}
           style={{
-            padding: "12px 32px",
+            padding: isMobile ? "14px 40px" : "12px 32px",
             borderRadius: "100px",
             background: "#FFFFFF",
             border: "1px solid rgba(15,23,42,0.12)",
@@ -351,13 +333,10 @@ export default function KineticPlayer({ active, mood, duration, onComplete, onBa
             textTransform: "uppercase",
             cursor: "pointer",
             transition: "box-shadow 200ms",
+            minWidth: isMobile ? 160 : "auto",
           }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.boxShadow = "0 4px 16px rgba(15,23,42,0.1)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.boxShadow = "0 2px 8px rgba(15,23,42,0.06)";
-          }}
+          onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 4px 16px rgba(15,23,42,0.1)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 2px 8px rgba(15,23,42,0.06)"; }}
         >
           {paused ? "Resume" : "Pause"}
         </button>

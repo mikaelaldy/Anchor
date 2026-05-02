@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Outfit:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Outfit:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -34,6 +34,9 @@ body {
   color: var(--color-text);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  /* Safe area insets for notched phones */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .screen {
@@ -76,31 +79,9 @@ body {
   animation: breathe 14s ease-in-out infinite;
 }
 
-@keyframes confetti-fall {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(300px) rotate(720deg);
-    opacity: 0;
-  }
-}
-
-.confetti-particle {
-  position: absolute;
-  animation: confetti-fall 2s ease-out forwards;
-}
-
 @keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .fade-in-up {
@@ -117,23 +98,5 @@ body {
 }
 
 @keyframes ripple-expand {
-  to {
-    transform: scale(4);
-    opacity: 0;
-  }
-}
-
-@media (max-width: 767px) {
-  .mobile-message {
-    display: flex !important;
-  }
-  .app-content {
-    display: none !important;
-  }
-}
-
-@media (min-width: 768px) {
-  .mobile-message {
-    display: none !important;
-  }
+  to { transform: scale(4); opacity: 0; }
 }
