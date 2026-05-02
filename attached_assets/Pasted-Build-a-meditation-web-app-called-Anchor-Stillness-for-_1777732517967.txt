@@ -1,0 +1,163 @@
+Build a meditation web app called **Anchor** — "Stillness for the restless mind."
+Designed for ADHD users. Free, no sign-up, no paywall. Desktop-first.
+
+Stack: Vanilla HTML + Tailwind CSS v3 (CDN) + vanilla JS + <canvas> for particles.
+Single HTML file. No frameworks. No build step.
+
+---
+
+## DESIGN SYSTEM
+
+Apply these exact values globally:
+
+```css
+:root {
+  --color-primary: #6366F1;
+  --color-bg: #FAFBFF;
+  --color-surface: #FFFFFF;
+  --color-text: #0F172A;
+  --color-muted: #94A3B8;
+  --color-accent: #818CF8;
+  --color-success: #10B981;
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-body: 'Outfit', sans-serif;
+  --radius-pill: 100px;
+  --radius-card: 24px;
+  --border-light: 1px solid rgba(15, 23, 42, 0.08);
+  --shadow-soft: 0 4px 24px rgba(99, 102, 241, 0.08);
+  --shadow-card: 0 8px 32px rgba(15, 23, 42, 0.08);
+}
+```
+
+Import from Google Fonts: Space Grotesk (700) and Outfit (400, 500).
+Background: #FAFBFF. Clean white surfaces with soft shadows — no glassmorphism, no blur effects.
+All surfaces: background #FFFFFF, border var(--border-light), box-shadow var(--shadow-card).
+
+---
+
+## APP STRUCTURE
+
+Single page app. 4 screens rendered via JS show/hide. No routing library.
+
+Screens in order:
+1. sensory-landing
+2. session-selector
+3. kinetic-player
+4. dopamine-reward
+
+---
+
+## SCREEN 1: SENSORY LANDING
+
+Full viewport height. Centered content, max-width 800px. White background.
+
+Background: static #FAFBFF. Subtle radial gradient: radial-gradient(ellipse at 60% 40%, rgba(99,102,241,0.06), transparent 60%).
+
+Elements (top to bottom, vertically centered):
+- Logo/wordmark: "⚓ Anchor" — Space Grotesk 700, 48px, #0F172A
+- Tagline: "Stillness for the restless mind." — Outfit 400, 18px, #94A3B8. Margin-top: 12px.
+- Gap: 48px
+- Prompt text: "How loud is the noise right now?" — Outfit 400, 18px, #0F172A
+- Gap: 24px
+- Mood pills row (horizontal flex, centered, gap-4):
+  - "Scattered"
+  - "Paralyzed"
+  - "Buzzing"
+  Each pill: padding 12px 24px, border-radius 100px, background #FFFFFF, border 1px solid rgba(15,23,42,0.12), text #0F172A, Space Grotesk 600 15px uppercase, box-shadow 0 2px 8px rgba(15,23,42,0.06).
+  Hover: background #6366F1, border-color #6366F1, text #FFFFFF, transition 200ms.
+  Click: scale 0.95 snap, then transition to Screen 2.
+
+Bottom of screen (fixed footer, centered):
+- Small text: "Free · Open Source · No Sign-up" — Outfit 13px, #94A3B8, letter-spacing 0.05em
+
+---
+
+## SCREEN 2: SESSION SELECTOR
+
+Full viewport. Two-column flex layout (left + right), gap-12, centered, max-width 900px. White background.
+
+Left column:
+- Text: "You're feeling [MOOD]." — Space Grotesk 700 32px #0F172A. Replace [MOOD] with selected mood.
+- Subtext: "Let's ground." — Outfit 400 18px #94A3B8. Margin-top 8px.
+- Gap 24px
+- Helper text: "Choose how long you have." — Outfit 16px #94A3B8
+
+Right column:
+- Three duration tiles in a column (gap-4):
+  - "1 min" — label: "Quick reset"
+  - "3 min" — label: "Reground"
+  - "5 min" — label: "Full anchor"
+  Each tile: 100% width, padding 32px, border-radius 24px, background #FFFFFF, border var(--border-light), box-shadow var(--shadow-card).
+  Inside: big number (Space Grotesk 700 48px #6366F1) + label below (Outfit 400 16px #94A3B8).
+  Hover: border-color #6366F1, box-shadow 0 8px 32px rgba(99,102,241,0.15), translateY(-4px), transition 200ms.
+  Click: ripple effect (expanding circle from click point, rgba(99,102,241,0.1)), then transition to Screen 3.
+
+---
+
+## SCREEN 3: KINETIC PLAYER
+
+Full viewport. Background #FAFBFF. Clean and minimal. No navigation.
+
+Center of screen: The Breath Node.
+- 300px × 300px div.
+- border-radius animating between 40% 60% 60% 40% / 40% 40% 60% 60% and 60% 40% 40% 60% / 60% 60% 40% 40%.
+- background: radial-gradient(circle, rgba(99,102,241,0.15), rgba(129,140,248,0.05))
+- border: 2px solid rgba(99,102,241,0.2)
+- box-shadow: 0 0 60px rgba(99,102,241,0.12), 0 0 120px rgba(99,102,241,0.06)
+- Breathing cycle: inhale 4s (scale 1→1.3) + hold 4s + exhale 6s (scale 1.3→1). CSS keyframe loop.
+- Text inside: "Inhale" / "Hold" / "Exhale" — Outfit 500 16px #0F172A, synced to animation phases.
+
+Fidget layer (full viewport canvas, pointer-events on):
+- On mousemove: spawn particle trails. Each particle: 3–6px circle, color #6366F1 fading to transparent, lifetime ~800ms, slight random spread. requestAnimationFrame on <canvas> covering full screen. z-index below breath node, above background.
+
+Progress ring:
+- Centered SVG 500×500.
+- Track: stroke #E2E8F0, width 2px.
+- Progress: stroke #6366F1, width 2px, stroke-dasharray animated over session duration.
+
+Top-right corner:
+- Session label: "[MOOD] · [DURATION]" — Outfit 13px #94A3B8
+- Time remaining: Outfit 500 16px #0F172A
+
+Spacebar: toggles pause. On pause: background shifts to rgba(250,251,255,0.9), centered "Paused — press space to continue" text in Outfit 500 18px #0F172A.
+
+Session end: node fades out (opacity 0, scale 1.5, 800ms), auto-transition to Screen 4.
+
+---
+
+## SCREEN 4: DOPAMINE REWARD
+
+Full viewport. Background #FAFBFF. Centered card, max-width 480px.
+
+On mount: confetti burst from center. Colors: #6366F1, #818CF8, #10B981, #0F172A. 60 particles, 360° spread, gravity, 2s animation.
+
+Card (background #FFFFFF, border-radius 24px, padding 48px, box-shadow 0 24px 48px rgba(15,23,42,0.1), border var(--border-light)):
+- Title: "Anchored." — Space Grotesk 700 48px #0F172A
+- Subtitle: "You showed up for your brain." — Outfit 400 18px #94A3B8. Margin-top 8px.
+- Gap 24px
+- Stat strip: "[DURATION] minutes. Session complete." — Outfit 16px #94A3B8
+- Streak: "🔥 [N] day streak" — Outfit 500 16px #0F172A. Read/write from localStorage "anchor_streak".
+- Gap 32px
+- CTA button: "Back to the noise." — Space Grotesk 600 15px uppercase. Full width. Padding 16px. Border-radius 100px. Background #6366F1, text #FFFFFF, box-shadow 0 4px 16px rgba(99,102,241,0.3).
+  Hover: background #4F46E5, box-shadow 0 8px 24px rgba(99,102,241,0.4), transition 200ms.
+  Click: routes to Screen 1, updates streak.
+
+---
+
+## STREAK LOGIC (localStorage)
+
+Key: "anchor_streak" = { count: N, lastDate: "YYYY-MM-DD" }
+On session complete:
+- If lastDate = today: don't increment.
+- If lastDate = yesterday: increment count.
+- Otherwise: reset to 1.
+- Update lastDate to today.
+
+---
+
+## GLOBAL
+
+- All screen transitions: opacity 0→1, 400ms ease-out.
+- Custom cursor: none over kinetic player. Default elsewhere.
+- All text non-selectable on player screen (user-select: none).
+- Mobile: show centered message "Anchor is best on desktop. Mobile coming soon." on screens < 768px.

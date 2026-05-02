@@ -1,0 +1,158 @@
+import { Mood } from "@/App";
+
+interface Props {
+  active: boolean;
+  onMoodSelect: (mood: Mood) => void;
+}
+
+const moods: Mood[] = ["Scattered", "Paralyzed", "Buzzing"];
+
+export default function SensoryLanding({ active, onMoodSelect }: Props) {
+  const handleMoodClick = (mood: Mood, e: React.MouseEvent<HTMLButtonElement>) => {
+    const btn = e.currentTarget;
+    btn.style.transform = "scale(0.95)";
+    setTimeout(() => {
+      btn.style.transform = "";
+      onMoodSelect(mood);
+    }, 150);
+  };
+
+  return (
+    <div
+      className={`screen${active ? " active" : ""}`}
+      style={{
+        background: "var(--color-bg)",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "radial-gradient(ellipse at 60% 40%, rgba(99,102,241,0.06), transparent 60%)",
+          pointerEvents: "none",
+        }}
+      />
+
+      <div
+        style={{
+          maxWidth: 800,
+          width: "100%",
+          padding: "0 32px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center",
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
+        <div
+          style={{
+            fontFamily: "var(--font-heading)",
+            fontWeight: 700,
+            fontSize: 48,
+            color: "var(--color-text)",
+            letterSpacing: "-0.02em",
+          }}
+        >
+          ⚓ Anchor
+        </div>
+
+        <p
+          style={{
+            fontFamily: "var(--font-body)",
+            fontWeight: 400,
+            fontSize: 18,
+            color: "var(--color-muted)",
+            marginTop: 12,
+          }}
+        >
+          Stillness for the restless mind.
+        </p>
+
+        <div style={{ height: 48 }} />
+
+        <p
+          style={{
+            fontFamily: "var(--font-body)",
+            fontWeight: 400,
+            fontSize: 18,
+            color: "var(--color-text)",
+          }}
+        >
+          How loud is the noise right now?
+        </p>
+
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 16,
+            marginTop: 24,
+            flexWrap: "wrap",
+          }}
+        >
+          {moods.map((mood) => (
+            <button
+              key={mood}
+              onClick={(e) => handleMoodClick(mood, e)}
+              style={{
+                padding: "12px 24px",
+                borderRadius: "100px",
+                background: "var(--color-surface)",
+                border: "1px solid rgba(15,23,42,0.12)",
+                color: "var(--color-text)",
+                fontFamily: "var(--font-heading)",
+                fontWeight: 600,
+                fontSize: 15,
+                letterSpacing: "0.05em",
+                textTransform: "uppercase",
+                boxShadow: "0 2px 8px rgba(15,23,42,0.06)",
+                cursor: "pointer",
+                transition: "background 200ms, border-color 200ms, color 200ms, transform 150ms",
+              }}
+              onMouseEnter={(e) => {
+                const t = e.currentTarget;
+                t.style.background = "var(--color-primary)";
+                t.style.borderColor = "var(--color-primary)";
+                t.style.color = "#FFFFFF";
+              }}
+              onMouseLeave={(e) => {
+                const t = e.currentTarget;
+                t.style.background = "var(--color-surface)";
+                t.style.borderColor = "rgba(15,23,42,0.12)";
+                t.style.color = "var(--color-text)";
+              }}
+            >
+              {mood}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div
+        style={{
+          position: "fixed",
+          bottom: 24,
+          left: 0,
+          right: 0,
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <p
+          style={{
+            fontFamily: "var(--font-body)",
+            fontSize: 13,
+            color: "var(--color-muted)",
+            letterSpacing: "0.05em",
+          }}
+        >
+          Free · Open Source · No Sign-up
+        </p>
+      </div>
+    </div>
+  );
+}
