@@ -9,10 +9,10 @@ interface Props {
   onBack: () => void;
 }
 
-const durations: { value: Duration; label: string }[] = [
-  { value: 1, label: "Quick reset" },
-  { value: 3, label: "Reground" },
-  { value: 5, label: "Full anchor" },
+const durations: { value: Duration; label: string; sub: string }[] = [
+  { value: 1, label: "1 min", sub: "Quick reset" },
+  { value: 3, label: "3 min", sub: "Reground" },
+  { value: 5, label: "5 min", sub: "Full anchor" },
 ];
 
 export default function SessionSelector({ active, mood, onDurationSelect, onBack }: Props) {
@@ -22,11 +22,9 @@ export default function SessionSelector({ active, mood, onDurationSelect, onBack
   const handleSelect = (duration: Duration, index: number, e: React.MouseEvent<HTMLDivElement>) => {
     const tile = tileRefs.current[index];
     if (!tile) return;
-
     const rect = tile.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-
     const ripple = document.createElement("div");
     ripple.className = "ripple";
     ripple.style.left = `${x - 20}px`;
@@ -36,152 +34,172 @@ export default function SessionSelector({ active, mood, onDurationSelect, onBack
     tile.style.position = "relative";
     tile.style.overflow = "hidden";
     tile.appendChild(ripple);
-
-    setTimeout(() => {
-      ripple.remove();
-      onDurationSelect(duration);
-    }, 400);
+    setTimeout(() => { ripple.remove(); onDurationSelect(duration); }, 400);
   };
 
   return (
     <div
       className={`screen${active ? " active" : ""}`}
-      style={{
-        background: "var(--color-bg)",
-        overflowY: "auto",
-        alignItems: isMobile ? "flex-start" : "center",
-        justifyContent: isMobile ? "flex-start" : "center",
-      }}
+      style={{ background: "var(--color-bg)", overflowY: "auto", justifyContent: "flex-start" }}
     >
-      <button
-        onClick={onBack}
-        style={{
-          position: "fixed",
-          top: 20,
-          left: isMobile ? 20 : 32,
-          background: "none",
-          border: "none",
-          cursor: "pointer",
-          fontFamily: "var(--font-body)",
-          fontWeight: 500,
-          fontSize: 14,
-          color: "var(--color-muted)",
-          padding: 0,
-          zIndex: 10,
-        }}
-      >
-        ← Back
-      </button>
-
-      <div
-        style={{
-          maxWidth: 900,
-          width: "100%",
-          padding: isMobile ? "80px 24px 40px" : "0 32px",
+      {/* Sticky header */}
+      <div style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 50,
+        background: "rgba(253,248,248,0.9)",
+        backdropFilter: "blur(12px)",
+        width: "100%",
+        boxShadow: "var(--shadow-nav)",
+      }}>
+        <div style={{
+          maxWidth: 640,
+          margin: "0 auto",
           display: "flex",
-          flexDirection: isMobile ? "column" : "row",
-          alignItems: isMobile ? "flex-start" : "center",
-          gap: isMobile ? 32 : 48,
-        }}
-      >
-        <div style={{ flex: 1 }}>
-          <p
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: isMobile ? "14px 24px" : "16px 32px",
+        }}>
+          <button
+            onClick={onBack}
             style={{
-              fontFamily: "var(--font-heading)",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: 0,
+              fontFamily: "var(--font)",
               fontWeight: 700,
-              fontSize: isMobile ? 26 : 32,
+              fontSize: 13,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
               color: "var(--color-text)",
-              lineHeight: 1.2,
+              transition: "transform 150ms",
             }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(0.95)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
           >
-            You're feeling {mood}.
-          </p>
-          <p
-            style={{
-              fontFamily: "var(--font-body)",
-              fontWeight: 400,
-              fontSize: isMobile ? 16 : 18,
-              color: "var(--color-muted)",
-              marginTop: 8,
-            }}
-          >
-            Let's ground.
-          </p>
-          <p
-            style={{
-              fontFamily: "var(--font-body)",
-              fontWeight: 400,
-              fontSize: 16,
-              color: "var(--color-muted)",
-              marginTop: 16,
-            }}
-          >
-            Choose how long you have.
+            <span className="material-symbols-outlined" style={{ fontSize: 20 }}>arrow_back</span>
+            Back
+          </button>
+          <span style={{
+            fontFamily: "var(--font)",
+            fontWeight: 800,
+            fontSize: 20,
+            letterSpacing: "-0.02em",
+            color: "var(--color-text)",
+          }}>
+            Anchor
+          </span>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div style={{
+        maxWidth: 640,
+        width: "100%",
+        margin: "0 auto",
+        padding: isMobile ? "48px 24px 64px" : "64px 32px 64px",
+        display: "flex",
+        flexDirection: "column",
+        gap: 24,
+      }}>
+        <div style={{ textAlign: "center", marginBottom: 8 }}>
+          <h1 style={{
+            fontFamily: "var(--font)",
+            fontWeight: 800,
+            fontSize: isMobile ? 36 : 48,
+            letterSpacing: "-0.02em",
+            lineHeight: 1.1,
+            color: "var(--color-text)",
+            marginBottom: 12,
+          }}>
+            You're feeling<br />{mood}.
+          </h1>
+          <p style={{
+            fontFamily: "var(--font)",
+            fontWeight: 400,
+            fontSize: isMobile ? 16 : 18,
+            color: "var(--color-muted-mid)",
+            lineHeight: 1.6,
+          }}>
+            How long do you have right now?
           </p>
         </div>
 
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            gap: 12,
-            width: isMobile ? "100%" : "auto",
-          }}
-        >
-          {durations.map(({ value, label }, i) => (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {durations.map(({ value, label, sub }, i) => (
             <div
               key={value}
               ref={(el) => { tileRefs.current[i] = el; }}
               onClick={(e) => handleSelect(value, i, e)}
               style={{
-                width: "100%",
-                padding: isMobile ? "20px 24px" : 32,
-                borderRadius: 24,
                 background: "var(--color-surface)",
-                border: "var(--border)",
+                borderRadius: "var(--radius-card)",
+                padding: isMobile ? "28px 28px" : "36px 40px",
                 boxShadow: "var(--shadow-card)",
                 cursor: "pointer",
-                transition: "border-color 200ms, box-shadow 200ms, transform 200ms",
+                transition: "transform 200ms ease, box-shadow 200ms ease",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}
               onMouseEnter={(e) => {
-                const t = e.currentTarget;
-                t.style.borderColor = "#1A1A1A";
-                t.style.boxShadow = "0 8px 32px rgba(26,26,26,0.12)";
-                t.style.transform = "translateY(-4px)";
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow = "0 50px 100px rgba(0,0,0,0.08)";
               }}
               onMouseLeave={(e) => {
-                const t = e.currentTarget;
-                t.style.borderColor = "rgba(26,26,26,0.10)";
-                t.style.boxShadow = "var(--shadow-card)";
-                t.style.transform = "translateY(0)";
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "var(--shadow-card)";
               }}
             >
-              <p
-                style={{
-                  fontFamily: "var(--font-heading)",
-                  fontWeight: 700,
-                  fontSize: isMobile ? 36 : 48,
-                  color: "var(--color-text)",
+              <div>
+                <p style={{
+                  fontFamily: "var(--font)",
+                  fontWeight: 800,
+                  fontSize: isMobile ? 40 : 48,
+                  letterSpacing: "-0.02em",
                   lineHeight: 1,
-                }}
-              >
-                {value} min
-              </p>
-              <p
-                style={{
-                  fontFamily: "var(--font-body)",
-                  fontWeight: 400,
-                  fontSize: 15,
+                  color: "var(--color-text)",
+                }}>
+                  {label}
+                </p>
+                <p style={{
+                  fontFamily: "var(--font)",
+                  fontWeight: 600,
+                  fontSize: 13,
                   color: "var(--color-muted)",
-                  marginTop: 4,
-                }}
+                  marginTop: 6,
+                  letterSpacing: "0.06em",
+                  textTransform: "uppercase",
+                }}>
+                  {sub}
+                </p>
+              </div>
+              <span
+                className="material-symbols-outlined"
+                style={{ fontSize: 22, color: "var(--color-outline-variant)" }}
               >
-                {label}
-              </p>
+                arrow_forward_ios
+              </span>
             </div>
           ))}
         </div>
+
+        <p style={{
+          textAlign: "center",
+          fontFamily: "var(--font)",
+          fontSize: 12,
+          fontWeight: 700,
+          letterSpacing: "0.15em",
+          textTransform: "uppercase",
+          color: "var(--color-muted)",
+          marginTop: 4,
+        }}>
+          No judgment. Even one minute counts.
+        </p>
       </div>
     </div>
   );
