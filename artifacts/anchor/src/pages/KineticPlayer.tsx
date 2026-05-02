@@ -53,6 +53,8 @@ export default function KineticPlayer({ active, mood, duration, onComplete, onBa
   const pausedRef = useRef(false);
   const elapsedRef = useRef(0);
   const completedRef = useRef(false);
+  const accumulatedRef = useRef(0);
+  const segmentStartRef = useRef(0);
 
   const totalMs = duration * 60 * 1000;
 
@@ -64,6 +66,11 @@ export default function KineticPlayer({ active, mood, duration, onComplete, onBa
 
   const togglePause = useCallback(() => {
     const next = !pausedRef.current;
+    if (next) {
+      accumulatedRef.current += performance.now() - segmentStartRef.current;
+    } else {
+      segmentStartRef.current = performance.now();
+    }
     pausedRef.current = next;
     setPaused(next);
   }, []);
@@ -143,11 +150,13 @@ export default function KineticPlayer({ active, mood, duration, onComplete, onBa
       return;
     }
 
+    accumulatedRef.current = 0;
+    segmentStartRef.current = performance.now();
     elapsedRef.current = 0;
     const interval = setInterval(() => {
       if (pausedRef.current) return;
-      elapsedRef.current += 100;
-      const elapsed = elapsedRef.current;
+      const elapsed = accumulatedRef.current + (performance.now() - segmentStartRef.current);
+      elapsedRef.current = elapsed;
       const remaining = Math.max(0, totalMs - elapsed);
       setTimeLeft(Math.ceil(remaining / 1000));
       setProgress(Math.min(elapsed / totalMs, 1));
