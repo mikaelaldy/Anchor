@@ -283,7 +283,11 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
                   style={mutedLink}
                   onMouseEnter={(e) => { e.currentTarget.style.textDecoration = "underline"; }}
                   onMouseLeave={(e) => { e.currentTarget.style.textDecoration = "none"; }}
-                  onClick={login}
+                  onClick={() => {
+                    sessionStorage.setItem("anchor_pending_sync", "1");
+                    sessionStorage.setItem("anchor_pending_duration", String(duration));
+                    login();
+                  }}
                 >
                   Sync streak with your account to save across devices
                 </button>
