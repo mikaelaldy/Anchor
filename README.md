@@ -1,138 +1,85 @@
 # Anchor
 
-**Stillness for the restless mind.**
+A meditation app for ADHD brains. Free forever, open source, for everyone.
 
-Anchor is a free, open-source meditation PWA built specifically for ADHD brains. No subscriptions, no account, no judgement — just open it and breathe.
+## What it does
 
----
+Anchor skips the onboarding. You pick how your brain feels right now (Scattered, Paralyzed, or Buzzing), choose how many minutes you have (1, 3, or 5), and follow an animated breathing guide. When the session ends you get a confetti burst, a streak count, and a 28-day calendar showing every day you showed up.
 
-## Why Anchor?
-
-Most meditation apps assume you can sit still long enough to log in, choose a playlist, and follow a ten-minute guided session. Anchor doesn't. It meets you where you are — scattered, buzzing, or paralyzed — and gives you the shortest possible path to a breath.
-
----
-
-## Features
-
-- **Mood-first flow** — Start by naming how you feel right now. Three honest options: Scattered, Paralyzed, Buzzing.
-- **Flexible session lengths** — 1, 3, or 5 minutes. Even a single minute counts.
-- **Kinetic breath player** — An animated blob guides you through 4-4-6 breathing (inhale · hold · exhale). Move your mouse to leave particle trails — the fidget layer is intentional.
-- **Dopamine reward screen** — Confetti burst and streak tracking when you complete a session.
-- **Streak tracking** — Daily streak stored locally. No account required.
-- **Spacebar pause** — Pause and resume the session with the spacebar or the on-screen button.
-- **Fully offline** — Installable as a PWA. Works without internet once installed.
-- **Responsive** — Adapts to mobile screens with touch particle trails, scaled layouts, and safe-area insets.
-
----
+No subscriptions. No email. No account required.
 
 ## Screens
 
-| Screen | Description |
-|---|---|
-| Mood Selector | Pick your current mental state |
-| Session Picker | Choose 1, 3, or 5 minutes |
-| Kinetic Player | Breath animation with particle trail and progress ring |
-| Dopamine Reward | Confetti burst, stat summary, and streak display |
+**Marketing landing** — explains the app, links to the flow, works as a standalone page.
 
----
+**Mood picker** — three honest states. Pick the one that fits.
 
-## Tech Stack
+**Session picker** — 1, 3, or 5 minutes. Each mood has its own tone.
 
-- **React + Vite** — Fast dev and production builds
-- **TypeScript** — Fully typed throughout
-- **CSS custom properties** — Design token–driven styling (no Tailwind components used)
-- **Canvas API** — Particle trail and confetti animations
-- **localStorage** — Streak persistence, no backend needed
-- **PWA** — `manifest.json` + `sw.js` service worker for install and offline support
+**Kinetic player** — an animated blob breathes with you through 4s inhale, 4s hold, 6s exhale cycles. Move the mouse and particles trail behind it. That part is intentional.
 
-### Design System
+**Dopamine reward** — confetti, streak count, a 28-day calendar grid, and an optional account sync prompt.
 
-| Token | Value |
+## Streak tracking
+
+Completed sessions are stored as an array of dates in `localStorage` under the key `anchor_dates`. The reward screen shows the last 28 days as a grid: dark squares for completed days, green for today, faint gray for missed ones.
+
+If you log in, the streak syncs to a PostgreSQL database tied to your account and stays consistent across devices. Logging in is optional and the local streak works exactly the same without it.
+
+## Account sync
+
+The API server handles authentication through Replit's OpenID Connect provider. Sessions are stored in PostgreSQL. Signing in gives you cross-device streak history. Signing out clears the session cookie and ends the OIDC session.
+
+The login prompt on the reward screen is a single small link. It does not interrupt the app if you ignore it.
+
+## Tech
+
+**Frontend:** React, Vite, TypeScript, Canvas API, CSS custom properties, localStorage, PWA manifest and service worker.
+
+**Backend:** Express 5, PostgreSQL, Drizzle ORM, openid-client v6, pino for logging.
+
+**Auth:** Replit OIDC with PKCE. Sessions in a `sessions` table. Users in a `users` table. Streak days in a `streak_days` table (userId + date, composite primary key, deduplication handled server-side).
+
+## Design tokens
+
+| | |
 |---|---|
 | Background | `#F5F4F0` |
 | Surface | `#FFFFFF` |
 | Text | `#1A1A1A` |
 | Muted | `#A89F97` |
-| Accent | `#8C7A6B` |
-| Success | `#4A7C59` |
+| Accent (clay) | `#8C7A6B` |
+| Success (green) | `#4A7C59` |
 | Heading font | Space Grotesk 700 |
 | Body font | Outfit 400 / 500 |
 
----
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- pnpm 9+
-
-### Install
+## Running locally
 
 ```bash
 pnpm install
-```
-
-### Run (development)
-
-```bash
 pnpm --filter @workspace/anchor run dev
+pnpm --filter @workspace/api-server run dev
 ```
 
-The app runs at `http://localhost:<PORT>` (port assigned automatically).
-
-### Build
+The database needs a `DATABASE_URL` environment variable. Push the schema with:
 
 ```bash
-pnpm --filter @workspace/anchor run build
+pnpm --filter @workspace/db run push
 ```
 
----
-
-## Project Structure
+## Project layout
 
 ```
-artifacts/anchor/
-├── public/
-│   ├── manifest.json       # PWA manifest
-│   ├── sw.js               # Service worker (offline support)
-│   └── icons/              # App icons (SVG)
-└── src/
-    ├── App.tsx              # Root screen router
-    ├── index.css            # Global design tokens and keyframes
-    ├── hooks/
-    │   └── useIsMobile.ts   # Responsive breakpoint hook (768px)
-    └── pages/
-        ├── SensoryLanding.tsx   # Screen 1 — mood picker
-        ├── SessionSelector.tsx  # Screen 2 — duration tiles
-        ├── KineticPlayer.tsx    # Screen 3 — breath animation
-        └── DopamineReward.tsx   # Screen 4 — reward + streak
+artifacts/
+  anchor/          React + Vite PWA
+  api-server/      Express API, auth, streak endpoints
+
+lib/
+  db/              Drizzle schema and client
+  api-zod/         Zod schemas including auth types
+  replit-auth-web/ useAuth hook for the web app
 ```
-
----
-
-## Breathing Cycle
-
-The kinetic player follows a 14-second loop:
-
-| Phase | Duration |
-|---|---|
-| Inhale | 4 s |
-| Hold | 4 s |
-| Exhale | 6 s |
-
----
-
-## PWA Installation
-
-On mobile, tap the browser's "Add to Home Screen" prompt. On desktop, click the install icon in the address bar. Once installed, Anchor works fully offline.
-
----
 
 ## License
 
-MIT — free to use, modify, and distribute.
-
----
-
-*No sign-up. No subscriptions. No judgement.*
+MIT.
