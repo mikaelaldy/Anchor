@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
 interface Props {
@@ -21,11 +21,33 @@ const features = [
   { title: "Fully free", body: "No paywalls, no email, no account. Forever free, forever open." },
 ];
 
+const navLinkStyle: React.CSSProperties = {
+  fontFamily: "'Outfit', sans-serif",
+  fontSize: 14,
+  color: "#A89F97",
+  cursor: "pointer",
+  background: "none",
+  border: "none",
+  padding: 0,
+  transition: "color 150ms",
+};
+
 export default function MarketingLanding({ active, onStart }: Props) {
   const isMobile = useIsMobile();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const scrollTo = (id: string) => {
+    const container = containerRef.current;
+    if (!container) return;
+    const target = container.querySelector<HTMLElement>(`#${id}`);
+    if (!target) return;
+    const offset = target.offsetTop - (isMobile ? 64 : 80);
+    container.scrollTo({ top: offset, behavior: "smooth" });
+  };
 
   return (
     <div
+      ref={containerRef}
       className={`screen${active ? " active" : ""}`}
       style={{ overflowY: "auto", display: "block", background: "#F5F4F0" }}
     >
@@ -41,19 +63,40 @@ export default function MarketingLanding({ active, onStart }: Props) {
           height: isMobile ? 64 : 80,
           padding: isMobile ? "0 20px" : "0 40px",
         }}>
-          <div style={{
-            fontFamily: "'Space Grotesk', sans-serif",
-            fontWeight: 700, fontSize: isMobile ? 18 : 20,
-            color: "#1A1A1A", letterSpacing: "-0.02em",
-          }}>
+          {/* Logo — scrolls back to top */}
+          <button
+            onClick={() => containerRef.current?.scrollTo({ top: 0, behavior: "smooth" })}
+            style={{
+              fontFamily: "'Space Grotesk', sans-serif",
+              fontWeight: 700, fontSize: isMobile ? 18 : 20,
+              color: "#1A1A1A", letterSpacing: "-0.02em",
+              background: "none", border: "none", cursor: "pointer", padding: 0,
+            }}
+          >
             Anchor
-          </div>
+          </button>
+
           {!isMobile && (
             <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
-              <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, color: "#A89F97", cursor: "pointer" }}>How it works</span>
-              <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, color: "#A89F97", cursor: "pointer" }}>Features</span>
+              <button
+                style={navLinkStyle}
+                onClick={() => scrollTo("how-it-works")}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "#1A1A1A"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = "#A89F97"; }}
+              >
+                How it works
+              </button>
+              <button
+                style={navLinkStyle}
+                onClick={() => scrollTo("features")}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "#1A1A1A"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = "#A89F97"; }}
+              >
+                Features
+              </button>
             </div>
           )}
+
           <button
             onClick={onStart}
             style={{
@@ -62,7 +105,10 @@ export default function MarketingLanding({ active, onStart }: Props) {
               fontSize: 13, textTransform: "uppercase", letterSpacing: "0.05em",
               padding: isMobile ? "10px 20px" : "12px 24px",
               borderRadius: 100, border: "none", cursor: "pointer",
+              transition: "background 150ms",
             }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#333333"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "#1A1A1A"; }}
           >
             Try it free
           </button>
@@ -115,23 +161,34 @@ export default function MarketingLanding({ active, onStart }: Props) {
                   padding: "16px 36px", borderRadius: 100, border: "none", cursor: "pointer",
                   boxShadow: "0 4px 16px rgba(26,26,26,0.15)",
                   width: isMobile ? "100%" : "auto",
+                  transition: "background 150ms",
                 }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "#333333"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "#1A1A1A"; }}
               >
                 Start meditating
               </button>
-              <a
-                href="#how-it-works"
+              <button
+                onClick={() => scrollTo("how-it-works")}
                 style={{
                   backgroundColor: "transparent", color: "#1A1A1A",
                   fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600,
                   fontSize: 14, padding: "16px 32px", borderRadius: 100,
                   border: "1px solid rgba(26,26,26,0.10)", cursor: "pointer",
-                  textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center",
                   width: isMobile ? "100%" : "auto",
+                  transition: "border-color 150ms, background 150ms",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(26,26,26,0.30)";
+                  e.currentTarget.style.background = "rgba(26,26,26,0.03)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(26,26,26,0.10)";
+                  e.currentTarget.style.background = "transparent";
                 }}
               >
                 See how it works
-              </a>
+              </button>
             </div>
           </div>
 
@@ -204,7 +261,6 @@ export default function MarketingLanding({ active, onStart }: Props) {
               No warm-up. No sign-in. Just open and breathe.
             </p>
           </div>
-
           <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 20, maxWidth: 960, margin: "0 auto" }}>
             {steps.map((step, i) => (
               <div key={i} style={{
@@ -236,7 +292,6 @@ export default function MarketingLanding({ active, onStart }: Props) {
               Every detail works with your brain, not against it.
             </p>
           </div>
-
           <div style={{
             display: "grid",
             gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
@@ -281,7 +336,10 @@ export default function MarketingLanding({ active, onStart }: Props) {
               padding: "16px 48px", borderRadius: 100, border: "none", cursor: "pointer",
               marginTop: 40, boxShadow: "0 4px 24px rgba(0,0,0,0.2)",
               width: isMobile ? "100%" : "auto",
+              transition: "background 150ms",
             }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#F5F4F0"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "#FFFFFF"; }}
           >
             Open Anchor
           </button>
@@ -295,8 +353,16 @@ export default function MarketingLanding({ active, onStart }: Props) {
           display: "flex", flexDirection: isMobile ? "column" : "row",
           justifyContent: "space-between", alignItems: "center", gap: 12,
         }}>
-          <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 16, color: "#1A1A1A", letterSpacing: "-0.01em" }}>Anchor</div>
-          <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400, fontSize: 14, color: "#A89F97" }}>Stillness for the restless mind.</div>
+          <button
+            onClick={() => containerRef.current?.scrollTo({ top: 0, behavior: "smooth" })}
+            style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 16, color: "#1A1A1A", letterSpacing: "-0.01em", background: "none", border: "none", cursor: "pointer", padding: 0 }}
+          >
+            Anchor
+          </button>
+          <div style={{ display: "flex", gap: 24 }}>
+            <button style={{ ...navLinkStyle, fontSize: 13 }} onClick={() => scrollTo("how-it-works")}>How it works</button>
+            <button style={{ ...navLinkStyle, fontSize: 13 }} onClick={() => scrollTo("features")}>Features</button>
+          </div>
           <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400, fontSize: 14, color: "#A89F97" }}>Free forever, open source, for everyone</div>
         </div>
       </footer>
