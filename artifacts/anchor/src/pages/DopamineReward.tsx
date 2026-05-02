@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Duration } from "@/App";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import CalendarStreak from "@/components/CalendarStreak";
+import { useAuth } from "@workspace/replit-auth-web";
 
 interface Props {
   active: boolean;
@@ -8,37 +10,47 @@ interface Props {
   onRestart: () => void;
 }
 
-interface StreakData {
-  count: number;
-  lastDate: string;
-}
+const STORAGE_KEY = "anchor_streak_days";
 
-function getStreak(): StreakData {
+function getLocalDays(): string[] {
   try {
-    const raw = localStorage.getItem("anchor_streak");
-    if (!raw) return { count: 0, lastDate: "" };
-    return JSON.parse(raw);
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
-    return { count: 0, lastDate: "" };
+    return [];
   }
 }
 
-function updateStreak(): number {
+function recordLocalDay(): string[] {
   const today = new Date().toISOString().split("T")[0];
-  const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
-  const current = getStreak();
+  const days = getLocalDays();
+  if (!days.includes(today)) days.push(today);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(days));
+  return days;
+}
 
-  let newCount: number;
-  if (current.lastDate === today) {
-    newCount = current.count;
-  } else if (current.lastDate === yesterday) {
-    newCount = current.count + 1;
-  } else {
-    newCount = 1;
+function computeStreak(days: string[]): number {
+  if (days.length === 0) return 0;
+  const sorted = [...days].sort().reverse();
+  let streak = 0;
+  let cursor = new Date();
+  cursor.setHours(0, 0, 0, 0);
+  for (const d of sorted) {
+    const dayDate = new Date(d + "T00:00:00");
+    const diff = Math.round((cursor.getTime() - dayDate.getTime()) / 86400000);
+    if (diff === 0) {
+      streak++;
+      cursor = new Date(dayDate.getTime() - 86400000);
+    } else if (diff === 1) {
+      streak++;
+      cursor = new Date(dayDate.getTime() - 86400000);
+    } else {
+      break;
+    }
   }
-
-  localStorage.setItem("anchor_streak", JSON.stringify({ count: newCount, lastDate: today }));
-  return newCount;
+  return streak;
 }
 
 interface ConfettiParticle {
@@ -53,26 +65,80 @@ const COLORS = ["#8C7A6B", "#1A1A1A", "#FFFFFF", "#4A7C59"];
 
 export default function DopamineReward({ active, duration, onRestart }: Props) {
   const isMobile = useIsMobile();
-  const [streak, setStreak] = useState(1);
+  const { user, isLoading: authLoading, isAuthenticated, login } = useAuth();
+  const [completedDays, setCompletedDays] = useState<string[]>([]);
+  const [streak, setStreak] = useState(0);
   const [launched, setLaunched] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [synced, setSynced] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>(0);
   const particlesRef = useRef<ConfettiParticle[]>([]);
+  const recordedRef = useRef(false);
+
+  const mergeAndSet = useCallback((serverDays: string[]) => {
+    const local = getLocalDays();
+    const merged = Array.from(new Set([...local, ...serverDays])).sort();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+    setCompletedDays(merged);
+    setStreak(computeStreak(merged));
+  }, []);
+
+  const syncWithServer = useCallback(async () => {
+    setSyncing(true);
+    try {
+      const res = await fetch("/api/streak/record", {
+        method: "POST",
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json() as { days: string[] };
+        mergeAndSet(data.days);
+        setSynced(true);
+      }
+    } catch {
+    } finally {
+      setSyncing(false);
+    }
+  }, [mergeAndSet]);
+
+  const loadServerStreak = useCallback(async () => {
+    try {
+      const res = await fetch("/api/streak", { credentials: "include" });
+      if (res.ok) {
+        const data = await res.json() as { days: string[] };
+        mergeAndSet(data.days);
+      }
+    } catch {
+    }
+  }, [mergeAndSet]);
 
   useEffect(() => {
     if (!active) {
       setLaunched(false);
+      recordedRef.current = false;
+      setSynced(false);
       cancelAnimationFrame(animRef.current);
       return;
     }
 
-    setStreak(updateStreak());
+    if (recordedRef.current) return;
+    recordedRef.current = true;
+
+    const days = recordLocalDay();
+    setCompletedDays(days);
+    setStreak(computeStreak(days));
+
+    if (isAuthenticated) {
+      syncWithServer();
+    } else if (!authLoading) {
+      loadServerStreak();
+    }
 
     const canvas = canvasRef.current;
     if (!canvas) return;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
     const cx = canvas.width / 2;
     const cy = canvas.height / 2;
 
@@ -90,13 +156,11 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
         alpha: 1,
       };
     });
-
     setLaunched(true);
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     const startTime = performance.now();
-
     const loop = (now: number) => {
       const elapsed = now - startTime;
       if (elapsed > 2500) { ctx.clearRect(0, 0, canvas.width, canvas.height); return; }
@@ -118,12 +182,12 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
     };
     animRef.current = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animRef.current);
-  }, [active]);
+  }, [active, isAuthenticated, authLoading, syncWithServer, loadServerStreak]);
 
   return (
     <div
       className={`screen${active ? " active" : ""}`}
-      style={{ background: "var(--color-bg)" }}
+      style={{ background: "var(--color-bg)", overflowY: "auto", alignItems: "flex-start", justifyContent: "flex-start", paddingTop: 0 }}
     >
       <canvas
         ref={canvasRef}
@@ -134,9 +198,13 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
         style={{
           maxWidth: 480,
           width: "100%",
-          padding: isMobile ? "0 20px" : "0 24px",
+          padding: isMobile ? "24px 20px 40px" : "32px 24px 48px",
           position: "relative",
           zIndex: 1,
+          margin: "0 auto",
+          display: "flex",
+          flexDirection: "column",
+          gap: 16,
         }}
       >
         <div
@@ -144,7 +212,7 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
           style={{
             background: "var(--color-surface)",
             borderRadius: 24,
-            padding: isMobile ? "32px 24px" : 48,
+            padding: isMobile ? "32px 24px 28px" : "40px 40px 36px",
             boxShadow: "var(--shadow-card)",
             border: "var(--border)",
             display: "flex",
@@ -177,48 +245,206 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
             You showed up for your brain.
           </p>
 
-          <div style={{ height: 24 }} />
+          <div style={{ height: 20 }} />
 
-          <p style={{ fontFamily: "var(--font-body)", fontWeight: 400, fontSize: 16, color: "var(--color-muted)" }}>
-            {duration} minutes. Session complete.
+          <p style={{ fontFamily: "var(--font-body)", fontWeight: 400, fontSize: 15, color: "var(--color-muted)" }}>
+            {duration} minutes &middot; Session complete
           </p>
 
-          <p style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 16, color: "var(--color-text)", marginTop: 8 }}>
-            {streak} day streak
-          </p>
-
-          <div style={{ height: 32 }} />
-
-          <button
-            onClick={onRestart}
+          <div
             style={{
-              width: "100%",
-              padding: "16px",
-              borderRadius: "100px",
-              background: "#1A1A1A",
-              color: "#FFFFFF",
-              fontFamily: "var(--font-heading)",
-              fontWeight: 600,
-              fontSize: 15,
-              letterSpacing: "0.05em",
-              textTransform: "uppercase",
-              border: "none",
-              cursor: "pointer",
-              boxShadow: "0 4px 16px rgba(26,26,26,0.15)",
-              transition: "background 200ms, box-shadow 200ms",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "#333333";
-              e.currentTarget.style.boxShadow = "0 8px 24px rgba(26,26,26,0.2)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "#1A1A1A";
-              e.currentTarget.style.boxShadow = "0 4px 16px rgba(26,26,26,0.15)";
+              marginTop: 12,
+              padding: "10px 20px",
+              borderRadius: 100,
+              background: "rgba(140,122,107,0.1)",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
             }}
           >
-            Back to the noise.
-          </button>
+            <span style={{ fontSize: 18 }}>⚓</span>
+            <span
+              style={{
+                fontFamily: "var(--font-heading)",
+                fontWeight: 700,
+                fontSize: 20,
+                color: "var(--color-accent)",
+              }}
+            >
+              {streak} day streak
+            </span>
+          </div>
         </div>
+
+        <div
+          className={launched ? "fade-in-up" : ""}
+          style={{
+            background: "var(--color-surface)",
+            borderRadius: 24,
+            padding: isMobile ? "24px 20px" : "28px 32px",
+            boxShadow: "var(--shadow-card)",
+            border: "var(--border)",
+          }}
+        >
+          <p
+            style={{
+              fontFamily: "var(--font-heading)",
+              fontWeight: 700,
+              fontSize: 15,
+              color: "var(--color-text)",
+              marginBottom: 16,
+              letterSpacing: "0.03em",
+            }}
+          >
+            Your Streak
+          </p>
+          <CalendarStreak completedDays={completedDays} />
+        </div>
+
+        {!authLoading && (
+          <div
+            className={launched ? "fade-in-up" : ""}
+            style={{
+              background: "var(--color-surface)",
+              borderRadius: 24,
+              padding: isMobile ? "20px" : "24px 32px",
+              boxShadow: "var(--shadow-card)",
+              border: "var(--border)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 12,
+            }}
+          >
+            {isAuthenticated ? (
+              <>
+                <div>
+                  <p
+                    style={{
+                      fontFamily: "var(--font-body)",
+                      fontWeight: 500,
+                      fontSize: 14,
+                      color: "var(--color-text)",
+                    }}
+                  >
+                    {user?.firstName ? `Hi, ${user.firstName}` : "Signed in"}
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: "var(--font-body)",
+                      fontWeight: 400,
+                      fontSize: 13,
+                      color: "var(--color-muted)",
+                      marginTop: 2,
+                    }}
+                  >
+                    {synced
+                      ? "Streak saved to your account"
+                      : syncing
+                      ? "Saving streak..."
+                      : "Streak synced"}
+                  </p>
+                </div>
+                <div
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: "50%",
+                    background: synced ? "#4A7C59" : "rgba(140,122,107,0.15)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 16,
+                    flexShrink: 0,
+                    transition: "background 400ms",
+                  }}
+                >
+                  {syncing ? "⟳" : "✓"}
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <p
+                    style={{
+                      fontFamily: "var(--font-body)",
+                      fontWeight: 500,
+                      fontSize: 14,
+                      color: "var(--color-text)",
+                    }}
+                  >
+                    Save your streak
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: "var(--font-body)",
+                      fontWeight: 400,
+                      fontSize: 13,
+                      color: "var(--color-muted)",
+                      marginTop: 2,
+                    }}
+                  >
+                    Log in to sync across devices
+                  </p>
+                </div>
+                <button
+                  onClick={login}
+                  style={{
+                    padding: "10px 18px",
+                    borderRadius: 100,
+                    background: "#1A1A1A",
+                    color: "#FFFFFF",
+                    fontFamily: "var(--font-heading)",
+                    fontWeight: 600,
+                    fontSize: 13,
+                    letterSpacing: "0.04em",
+                    textTransform: "uppercase",
+                    border: "none",
+                    cursor: "pointer",
+                    whiteSpace: "nowrap",
+                    flexShrink: 0,
+                    transition: "background 200ms",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = "#333"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = "#1A1A1A"; }}
+                >
+                  Log in
+                </button>
+              </>
+            )}
+          </div>
+        )}
+
+        <button
+          className={launched ? "fade-in-up" : ""}
+          onClick={onRestart}
+          style={{
+            width: "100%",
+            padding: "16px",
+            borderRadius: "100px",
+            background: "#1A1A1A",
+            color: "#FFFFFF",
+            fontFamily: "var(--font-heading)",
+            fontWeight: 600,
+            fontSize: 15,
+            letterSpacing: "0.05em",
+            textTransform: "uppercase",
+            border: "none",
+            cursor: "pointer",
+            boxShadow: "0 4px 16px rgba(26,26,26,0.15)",
+            transition: "background 200ms, box-shadow 200ms",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "#333333";
+            e.currentTarget.style.boxShadow = "0 8px 24px rgba(26,26,26,0.2)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "#1A1A1A";
+            e.currentTarget.style.boxShadow = "0 4px 16px rgba(26,26,26,0.15)";
+          }}
+        >
+          Back to the noise.
+        </button>
       </div>
     </div>
   );

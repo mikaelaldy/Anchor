@@ -16,6 +16,19 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - **API codegen**: Orval (from OpenAPI spec)
 - **Build**: esbuild (CJS bundle)
 
+## Artifacts
+
+- **anchor** — Meditation PWA (React + Vite, path `/`)
+- **api-server** — Express API (path `/api`)
+
+## Features
+
+- Replit Auth (OpenID Connect + PKCE) — sessions stored in PostgreSQL `sessions` table
+- Streak tracking — `streak_days` table (userId + day, composite PK)
+- Auth routes: `GET /api/login`, `GET /api/callback`, `GET /api/logout`, `GET /api/auth/user`
+- Streak routes: `GET /api/streak` (load history), `POST /api/streak/record` (save today)
+- Frontend: `useAuth()` from `@workspace/replit-auth-web`, calendar grid in `DopamineReward`
+
 ## Key Commands
 
 - `pnpm run typecheck` — full typecheck across all packages
