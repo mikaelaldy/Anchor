@@ -1,10 +1,10 @@
 # Anchor
 
-A meditation app for ADHD brains. Free forever, open source, for everyone.
+A meditation app for whenever you need a moment. Free forever, open source, for everyone.
 
 ## What it does
 
-Anchor skips the onboarding. You pick how your brain feels right now (Scattered, Paralyzed, or Buzzing), choose how many minutes you have (1, 3, or 5), and follow an animated breathing guide. When the session ends you get a confetti burst, a streak count, and a 28-day calendar showing every day you showed up.
+Anchor skips the onboarding. You pick how you feel right now (Scattered, Overwhelmed, or Restless), choose how many minutes you have (1, 3, or 5), and follow an animated breathing guide. When the session ends you get a confetti burst, a streak count, and a 28-day calendar showing every day you showed up.
 
 No subscriptions. No email. No account required.
 

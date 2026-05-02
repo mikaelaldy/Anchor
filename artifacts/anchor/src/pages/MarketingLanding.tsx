@@ -83,16 +83,16 @@ const FeatureIcon = ({ title }: { title: string }) => {
 };
 
 const steps = [
-  { num: "01", title: "Tell us how you feel", body: "Scattered, Paralyzed, or Buzzing — pick the state that matches right now." },
+  { num: "01", title: "Tell us how you feel", body: "Scattered, Overwhelmed, or Restless — pick the state that matches right now." },
   { num: "02", title: "Pick your time", body: "1, 3, or 5 minutes. No judgment. Even one minute counts." },
-  { num: "03", title: "Follow the breath", body: "The breath node guides you through inhale, hold, and exhale cycles." },
+  { num: "03", title: "Follow the breath", body: "The breath guide takes you through inhale, hold, and exhale cycles." },
 ];
 
 const features = [
-  { title: "Mood-first", body: "Start by naming how you feel. No pretending to be calm." },
-  { title: "Instant start", body: "Zero onboarding. Tap a mood, pick a time, breathe." },
-  { title: "Fidget layer", body: "Move your mouse. Particles trail behind it. It helps." },
-  { title: "Streak tracking", body: "Build a daily habit with a simple streak counter. No pressure." },
+  { title: "Feeling-first", body: "Start by naming where you are. No performance, no pretending." },
+  { title: "Instant start", body: "No onboarding. Pick a feeling, pick a time, breathe." },
+  { title: "Motion layer", body: "Move your cursor. Particles trace behind it. Something about it settles the mind." },
+  { title: "Streak tracking", body: "Build a daily habit with a simple streak. No pressure." },
   { title: "Works offline", body: "Install as a PWA and use it anywhere, even without internet." },
   { title: "Fully free", body: "No paywalls, no email, no account. Forever free, forever open." },
 ];
@@ -224,7 +224,7 @@ export default function MarketingLanding({ active, onStart }: Props) {
               marginTop: 24, lineHeight: 1.6,
               maxWidth: isMobile ? "100%" : 520,
             }}>
-              Anchor is an ADHD-first meditation app that meets your brain where it is — scattered, buzzing, or paralyzed. No subscriptions. No judgement.
+              Anchor is a meditation app that meets you where you are — scattered, overwhelmed, or restless. No subscriptions. No judgement.
             </p>
             <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, marginTop: 40, alignItems: isMobile ? "stretch" : "center" }}>
               <button
@@ -360,13 +360,13 @@ export default function MarketingLanding({ active, onStart }: Props) {
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: isMobile ? 48 : 64 }}>
             <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 500, fontSize: 13, color: "#8C7A6B", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-              BUILT FOR ADHD BRAINS
+              BUILT FOR EVERYONE
             </div>
             <h2 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: isMobile ? 36 : 48, color: "#1A1A1A", marginTop: 16, marginBottom: 12 }}>
-              Designed for the way<br />you actually think.
+              Designed to fit<br />wherever you are.
             </h2>
             <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400, fontSize: isMobile ? 16 : 18, color: "#A89F97", maxWidth: 560, margin: "0 auto" }}>
-              Every detail works with your brain, not against it.
+              Simple enough to use in any moment, for any person.
             </p>
           </div>
           <div style={{

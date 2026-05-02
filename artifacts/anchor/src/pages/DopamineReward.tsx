@@ -236,7 +236,7 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
           </h1>
 
           <p style={{ fontFamily: "var(--font-body)", fontWeight: 400, fontSize: isMobile ? 16 : 18, color: "var(--color-muted)", marginTop: 8 }}>
-            You showed up for your brain.
+            You showed up for yourself.
           </p>
 
           <div style={{ height: 20 }} />

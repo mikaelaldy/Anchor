@@ -6,7 +6,7 @@ import KineticPlayer from "@/pages/KineticPlayer";
 import DopamineReward from "@/pages/DopamineReward";
 import { useAuth } from "@workspace/replit-auth-web";
 
-export type Mood = "Scattered" | "Paralyzed" | "Buzzing";
+export type Mood = "Scattered" | "Overwhelmed" | "Restless";
 export type Duration = 1 | 3 | 5;
 export type Screen = "home" | "landing" | "selector" | "player" | "reward";
 

@@ -6,7 +6,7 @@ interface Props {
   onMoodSelect: (mood: Mood) => void;
 }
 
-const moods: Mood[] = ["Scattered", "Paralyzed", "Buzzing"];
+const moods: Mood[] = ["Scattered", "Overwhelmed", "Restless"];
 
 export default function SensoryLanding({ active, onMoodSelect }: Props) {
   const isMobile = useIsMobile();
@@ -68,7 +68,7 @@ export default function SensoryLanding({ active, onMoodSelect }: Props) {
             marginTop: 12,
           }}
         >
-          Stillness for the restless mind.
+          A breath when you need one.
         </p>
 
         <div style={{ height: isMobile ? 36 : 48 }} />
@@ -81,7 +81,7 @@ export default function SensoryLanding({ active, onMoodSelect }: Props) {
             color: "var(--color-text)",
           }}
         >
-          How loud is the noise right now?
+          How are you feeling right now?
         </p>
 
         <div
