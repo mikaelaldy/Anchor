@@ -1,10 +1,13 @@
 import { useRef } from "react";
-import { Mood, Duration } from "@/App";
+import { Mood, Duration, SoundType } from "@/App";
+import { SOUNDS } from "@/hooks/useAmbientSound";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
 interface Props {
   active: boolean;
   mood: Mood;
+  sound: SoundType;
+  onSoundChange: (s: SoundType) => void;
   onDurationSelect: (duration: Duration) => void;
   onBack: () => void;
 }
@@ -15,7 +18,7 @@ const durations: { value: Duration; label: string; sub: string }[] = [
   { value: 5, label: "5 min", sub: "Full anchor" },
 ];
 
-export default function SessionSelector({ active, mood, onDurationSelect, onBack }: Props) {
+export default function SessionSelector({ active, mood, sound, onSoundChange, onDurationSelect, onBack }: Props) {
   const isMobile = useIsMobile();
   const tileRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -186,6 +189,52 @@ export default function SessionSelector({ active, mood, onDurationSelect, onBack
               </span>
             </div>
           ))}
+        </div>
+
+        {/* Sound picker */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <p style={{
+            fontFamily: "var(--font)",
+            fontWeight: 700,
+            fontSize: 11,
+            letterSpacing: "0.14em",
+            textTransform: "uppercase",
+            color: "var(--color-muted)",
+            textAlign: "center",
+          }}>
+            Background sound
+          </p>
+          <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
+            {SOUNDS.map(({ id, label, icon }) => {
+              const selected = sound === id;
+              return (
+                <button
+                  key={id}
+                  onClick={() => onSoundChange(id)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    padding: "10px 18px",
+                    borderRadius: "var(--radius-pill)",
+                    border: selected
+                      ? "2px solid var(--color-text)"
+                      : "2px solid var(--color-outline-variant)",
+                    background: selected ? "var(--color-text)" : "transparent",
+                    color: selected ? "var(--color-on-primary)" : "var(--color-muted-mid)",
+                    fontFamily: "var(--font)",
+                    fontWeight: 700,
+                    fontSize: 13,
+                    cursor: "pointer",
+                    transition: "all 180ms ease",
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 17 }}>{icon}</span>
+                  {label}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <p style={{

@@ -6,15 +6,18 @@ import KineticPlayer from "@/pages/KineticPlayer";
 import DopamineReward from "@/pages/DopamineReward";
 import Dashboard from "@/pages/Dashboard";
 import { useAuth } from "@workspace/replit-auth-web";
+import { type SoundType } from "@/hooks/useAmbientSound";
 
 export type Mood = "Scattered" | "Overwhelmed" | "Restless";
 export type Duration = 1 | 3 | 5;
 export type Screen = "home" | "landing" | "selector" | "player" | "reward" | "dashboard";
+export type { SoundType };
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("home");
   const [mood, setMood] = useState<Mood>("Scattered");
   const [duration, setDuration] = useState<Duration>(3);
+  const [sound, setSound] = useState<SoundType>("rain");
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -48,6 +51,8 @@ export default function App() {
       <SessionSelector
         active={screen === "selector"}
         mood={mood}
+        sound={sound}
+        onSoundChange={setSound}
         onDurationSelect={(d) => {
           setDuration(d);
           setScreen("player");
@@ -58,6 +63,7 @@ export default function App() {
         active={screen === "player"}
         mood={mood}
         duration={duration}
+        sound={sound}
         onComplete={() => setScreen("reward")}
         onBack={() => setScreen("selector")}
       />

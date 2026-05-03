@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Mood, Duration } from "@/App";
+import { Mood, Duration, SoundType } from "@/App";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { useAmbientSound, SOUNDS } from "@/hooks/useAmbientSound";
 
 interface Props {
   active: boolean;
   mood: Mood;
   duration: Duration;
+  sound: SoundType;
   onComplete: () => void;
   onBack: () => void;
 }
@@ -31,7 +33,7 @@ function getPhase(elapsed: number): BreathPhase {
   return "Exhale";
 }
 
-export default function KineticPlayer({ active, mood, duration, onComplete, onBack }: Props) {
+export default function KineticPlayer({ active, mood, duration, sound, onComplete, onBack }: Props) {
   const isMobile = useIsMobile();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
@@ -42,9 +44,12 @@ export default function KineticPlayer({ active, mood, duration, onComplete, onBa
   const prevPhaseRef = useRef<BreathPhase>("Inhale");
 
   const [paused, setPaused]       = useState(false);
+  const [muted, setMuted]         = useState(false);
   const [timeLeft, setTimeLeft]   = useState(duration * 60);
   const [progress, setProgress]   = useState(0);
   const [nodeVisible, setNodeVisible] = useState(true);
+
+  useAmbientSound(muted ? "none" : sound, active, paused, phase);
 
   const pausedRef       = useRef(false);
   const completedRef    = useRef(false);
@@ -251,7 +256,31 @@ export default function KineticPlayer({ active, mood, duration, onComplete, onBa
           Back
         </button>
 
-        <div style={{ textAlign: "right" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          {sound !== "none" && (
+            <button
+              onClick={() => setMuted(m => !m)}
+              title={muted ? "Unmute" : "Mute sound"}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: 36,
+                height: 36,
+                borderRadius: "50%",
+                background: muted ? "var(--color-surface-high)" : "var(--color-surface-low)",
+                border: "none",
+                cursor: "pointer",
+                color: muted ? "var(--color-muted)" : "var(--color-text)",
+                transition: "background 200ms, color 200ms",
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+                {muted ? "volume_off" : SOUNDS.find(s => s.id === sound)?.icon ?? "volume_up"}
+              </span>
+            </button>
+          )}
+          <div style={{ textAlign: "right" }}>
           <p style={{
             fontFamily: "var(--font)",
             fontWeight: 800,
@@ -273,6 +302,7 @@ export default function KineticPlayer({ active, mood, duration, onComplete, onBa
           }}>
             Remaining
           </p>
+          </div>
         </div>
       </div>
 
