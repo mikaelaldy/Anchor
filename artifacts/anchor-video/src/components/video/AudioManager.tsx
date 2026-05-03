@@ -10,7 +10,12 @@ const NARRATION: Record<string, string> = {
   close:   `${BASE}audio/n5.mp3`,
 };
 
-// A minor ambient pad: sine oscillators on A2 E3 A3 C4 E4
+// Module-level flag so AudioContext unlock survives VideoTemplate remounts
+// (clicking a scene button remounts VideoTemplate, which would otherwise reset
+//  the per-component unlockedRef back to false and block audio again).
+let _globalUnlocked = false;
+
+// A-minor ambient pad: sine oscillators at A2 E3 A3 C4 E4
 function makeAmbientPad(ctx: AudioContext): () => void {
   const master = ctx.createGain();
   master.gain.setValueAtTime(0, ctx.currentTime);
@@ -50,11 +55,11 @@ function makeAmbientPad(ctx: AudioContext): () => void {
     setTimeout(() => {
       oscs.forEach(o => { try { o.stop(); } catch { /**/ } });
       try { lfo.stop(); } catch { /**/ }
-    }, 1700);
+    }, 1800);
   };
 }
 
-// Breath-synced pink noise
+// Breath-synced pink noise (envelope follows 4s in / 2s hold / 4s out / 2s rest)
 function makeBreathSound(ctx: AudioContext): () => void {
   const sr = ctx.sampleRate;
   const buf = ctx.createBuffer(1, sr * 4, sr);
@@ -94,37 +99,53 @@ function makeBreathSound(ctx: AudioContext): () => void {
   };
 }
 
-export function AudioManager({ sceneKey, onUnlocked }: { sceneKey: string; onUnlocked?: () => void }) {
-  const ctxRef = useRef<AudioContext | null>(null);
-  const stopAmbientRef = useRef<(() => void) | null>(null);
-  const stopBreathRef = useRef<(() => void) | null>(null);
-  const narrationRef = useRef<HTMLAudioElement | null>(null);
-  const unlockedRef = useRef(false);
-  const currentNarSrcRef = useRef<string | null>(null);
+export function AudioManager({ sceneKey }: { sceneKey: string }) {
+  const ctxRef       = useRef<AudioContext | null>(null);
+  const stopAmbient  = useRef<(() => void) | null>(null);
+  const stopBreath   = useRef<(() => void) | null>(null);
+  const narration    = useRef<HTMLAudioElement | null>(null);
+  const unlockedRef  = useRef(_globalUnlocked);   // inherit module-level state on remount
+  const currentBase  = useRef('');
 
-  // Create AudioContext on mount
+  // ── Mount: create AudioContext + attach DOM unlock listener ──────────────
   useEffect(() => {
     let ctx: AudioContext;
-    try {
-      ctx = new AudioContext();
-      ctxRef.current = ctx;
-    } catch { return; }
+    try { ctx = new AudioContext(); ctxRef.current = ctx; }
+    catch { return; }
 
-    // ── CRITICAL: unlock audio synchronously inside a real DOM event ──
-    // React effects run outside the browser's user-activation window,
-    // so we attach a raw DOM listener that calls resume() + play() inline.
+    // If audio was already unlocked in a previous mount, resume the new context immediately.
+    // (This handles the remount-on-scene-jump case.)
+    if (_globalUnlocked) {
+      ctx.resume().then(() => {
+        stopAmbient.current = makeAmbientPad(ctx);
+        // Also replay the narration that the sceneKey effect already loaded
+        if (narration.current) {
+          narration.current.currentTime = 0;
+          narration.current.play().catch(() => { /**/ });
+        }
+        // Restart breath if we landed on the breath scene
+        if (currentBase.current === 'breath') {
+          stopBreath.current?.();
+          stopBreath.current = makeBreathSound(ctx);
+        }
+      });
+    }
+
+    // DOM listener for first-time unlock (synchronous inside gesture window)
     const unlock = () => {
       if (unlockedRef.current) return;
       unlockedRef.current = true;
+      _globalUnlocked = true;
       ctx.resume().then(() => {
-        // Replay the current narration if it was blocked
-        if (narrationRef.current) {
-          narrationRef.current.currentTime = 0;
-          narrationRef.current.play().catch(() => { /**/ });
+        stopAmbient.current = makeAmbientPad(ctx);
+        if (narration.current) {
+          narration.current.currentTime = 0;
+          narration.current.play().catch(() => { /**/ });
         }
-        // Start ambient pad now that context is running
-        stopAmbientRef.current = makeAmbientPad(ctx);
-        onUnlocked?.();
+        if (currentBase.current === 'breath') {
+          stopBreath.current?.();
+          stopBreath.current = makeBreathSound(ctx);
+        }
       });
     };
 
@@ -134,50 +155,60 @@ export function AudioManager({ sceneKey, onUnlocked }: { sceneKey: string; onUnl
     return () => {
       document.removeEventListener('pointerdown', unlock);
       document.removeEventListener('click',       unlock);
-      stopAmbientRef.current?.();
-      stopBreathRef.current?.();
+      stopAmbient.current?.();
+      stopBreath.current?.();
+      stopAmbient.current = null;
+      stopBreath.current = null;
+      narration.current?.pause();
+      narration.current = null;
       ctx.close().catch(() => { /**/ });
       ctxRef.current = null;
     };
   }, []);
 
-  // Per-scene: narration + breath sound
+  // ── Per-scene: swap narration + breath sound ──────────────────────────────
   useEffect(() => {
     const base = sceneKey.replace(/_r[12]$/, '');
+    currentBase.current = base;
 
     // Stop previous narration
-    const prev = narrationRef.current;
-    if (prev) { prev.pause(); prev.currentTime = 0; }
-    narrationRef.current = null;
+    narration.current?.pause();
+    narration.current = null;
 
     // Stop previous breath sound
-    stopBreathRef.current?.();
-    stopBreathRef.current = null;
+    stopBreath.current?.();
+    stopBreath.current = null;
 
+    // ── Narration ──
     const src = NARRATION[base] ?? null;
-    currentNarSrcRef.current = src;
+    let narTimer: ReturnType<typeof setTimeout> | null = null;
 
     if (src) {
       const audio = new Audio(src);
-      audio.volume = 0.88;
-      narrationRef.current = audio;
+      audio.volume = 0.85;
+      narration.current = audio;
 
-      // Only play if already unlocked — otherwise the unlock handler will play it
       if (unlockedRef.current) {
-        const timer = setTimeout(() => {
+        // Small offset so the scene animation has a moment to start
+        narTimer = setTimeout(() => {
           audio.play().catch(() => { /**/ });
-        }, 600);
-        return () => {
-          clearTimeout(timer);
-          audio.pause();
-        };
+        }, 400);
       }
+      // else: the unlock handler will call play() on narration.current
     }
 
-    // Breath sound (only when context already unlocked)
+    // ── Breath sound (runs in parallel with narration, not instead of it) ──
     if (base === 'breath' && ctxRef.current && unlockedRef.current) {
-      stopBreathRef.current = makeBreathSound(ctxRef.current);
+      stopBreath.current = makeBreathSound(ctxRef.current);
     }
+
+    return () => {
+      if (narTimer !== null) clearTimeout(narTimer);
+      narration.current?.pause();
+      narration.current = null;
+      stopBreath.current?.();
+      stopBreath.current = null;
+    };
   }, [sceneKey]);
 
   return null;
