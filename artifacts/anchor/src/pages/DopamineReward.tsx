@@ -8,6 +8,7 @@ interface Props {
   active: boolean;
   duration: Duration;
   onRestart: () => void;
+  onDashboard: () => void;
 }
 
 const STORAGE_KEY = "anchor_dates";
@@ -56,7 +57,7 @@ interface ConfettiParticle {
 
 const COLORS = ["#3e674b", "#1c1b1b", "#bfeec9", "#264f34", "#ffffff"];
 
-export default function DopamineReward({ active, duration, onRestart }: Props) {
+export default function DopamineReward({ active, duration, onRestart, onDashboard }: Props) {
   const isMobile = useIsMobile();
   const { user, isLoading: authLoading, isAuthenticated, login, logout } = useAuth();
   const [completedDays, setCompletedDays] = useState<string[]>([]);
@@ -462,6 +463,34 @@ export default function DopamineReward({ active, duration, onRestart }: Props) {
             }}
           >
             Back to the noise
+          </button>
+
+          <button
+            onClick={onDashboard}
+            style={{
+              width: "100%",
+              padding: "22px",
+              borderRadius: "var(--radius-pill)",
+              background: "transparent",
+              color: "var(--color-text)",
+              fontFamily: "var(--font)",
+              fontWeight: 700,
+              fontSize: 14,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              border: "2px solid rgba(28,27,27,0.1)",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 10,
+              transition: "background 200ms",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(28,27,27,0.04)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 20 }}>insights</span>
+            View my journey
           </button>
 
           <button

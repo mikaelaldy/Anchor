@@ -13,6 +13,7 @@ function GitHubIcon({ size = 20 }: { size?: number }) {
 interface Props {
   active: boolean;
   onStart: () => void;
+  onDashboard: () => void;
 }
 
 const steps = [
@@ -33,7 +34,7 @@ const steps = [
   },
 ];
 
-export default function MarketingLanding({ active, onStart }: Props) {
+export default function MarketingLanding({ active, onStart, onDashboard }: Props) {
   const isMobile = useIsMobile();
   const containerRef = useRef<HTMLDivElement>(null);
   const { isAuthenticated, login } = useAuth();
@@ -151,6 +152,27 @@ export default function MarketingLanding({ active, onStart }: Props) {
                 Support
                 <span className="material-symbols-outlined" style={{ fontSize: 16 }}>favorite</span>
               </button>
+              <button
+                onClick={onDashboard}
+                style={{
+                  fontFamily: "var(--font)",
+                  fontWeight: 500,
+                  fontSize: 14,
+                  color: "var(--color-muted-mid)",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 4,
+                  transition: "color 150ms",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted-mid)"; }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>insights</span>
+                My journey
+              </button>
               <a
                 href="https://github.com/mikaelaldy/Anchor"
                 target="_blank"
@@ -169,6 +191,27 @@ export default function MarketingLanding({ active, onStart }: Props) {
             </div>
           )}
 
+          {/* Mobile: streak icon + start */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {isMobile && (
+              <button
+                onClick={onDashboard}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: 36,
+                  height: 36,
+                  borderRadius: "50%",
+                  background: "var(--color-surface-low)",
+                  border: "none",
+                  cursor: "pointer",
+                  color: "var(--color-muted-mid)",
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>insights</span>
+              </button>
+            )}
           <button
             onClick={onStart}
             style={{
@@ -189,6 +232,7 @@ export default function MarketingLanding({ active, onStart }: Props) {
           >
             Start
           </button>
+          </div>
         </div>
       </nav>
 

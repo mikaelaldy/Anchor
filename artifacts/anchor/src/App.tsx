@@ -4,11 +4,12 @@ import SensoryLanding from "@/pages/SensoryLanding";
 import SessionSelector from "@/pages/SessionSelector";
 import KineticPlayer from "@/pages/KineticPlayer";
 import DopamineReward from "@/pages/DopamineReward";
+import Dashboard from "@/pages/Dashboard";
 import { useAuth } from "@workspace/replit-auth-web";
 
 export type Mood = "Scattered" | "Overwhelmed" | "Restless";
 export type Duration = 1 | 3 | 5;
-export type Screen = "home" | "landing" | "selector" | "player" | "reward";
+export type Screen = "home" | "landing" | "selector" | "player" | "reward" | "dashboard";
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("home");
@@ -35,6 +36,7 @@ export default function App() {
       <MarketingLanding
         active={screen === "home"}
         onStart={() => setScreen("landing")}
+        onDashboard={() => setScreen("dashboard")}
       />
       <SensoryLanding
         active={screen === "landing"}
@@ -63,6 +65,12 @@ export default function App() {
         active={screen === "reward"}
         duration={duration}
         onRestart={() => setScreen("home")}
+        onDashboard={() => setScreen("dashboard")}
+      />
+      <Dashboard
+        active={screen === "dashboard"}
+        onBack={() => setScreen("home")}
+        onStart={() => setScreen("landing")}
       />
     </div>
   );
