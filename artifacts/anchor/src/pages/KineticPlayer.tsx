@@ -1,13 +1,11 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Mood, Duration, SoundType } from "@/App";
+import { Mood, Duration } from "@/App";
 import { useIsMobile } from "@/hooks/useIsMobile";
-import { useAmbientSound, SOUNDS } from "@/hooks/useAmbientSound";
 
 interface Props {
   active: boolean;
   mood: Mood;
   duration: Duration;
-  sound: SoundType;
   onComplete: () => void;
   onBack: () => void;
 }
@@ -45,7 +43,7 @@ function audioSrc(mood: Mood, duration: Duration): string {
   return `/audio/${slug}-${suffix}.mp3`;
 }
 
-export default function KineticPlayer({ active, mood, duration, sound, onComplete, onBack }: Props) {
+export default function KineticPlayer({ active, mood, duration, onComplete, onBack }: Props) {
   const isMobile = useIsMobile();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
@@ -56,13 +54,10 @@ export default function KineticPlayer({ active, mood, duration, sound, onComplet
   const prevPhaseRef = useRef<BreathPhase>("Inhale");
 
   const [paused, setPaused]           = useState(false);
-  const [muted, setMuted]             = useState(false);
   const [voiceMuted, setVoiceMuted]   = useState(false);
   const [timeLeft, setTimeLeft]       = useState(duration * 60);
   const [progress, setProgress]       = useState(0);
   const [nodeVisible, setNodeVisible] = useState(true);
-
-  useAmbientSound(muted ? "none" : sound, active, paused, phase);
 
   const audioRef    = useRef<HTMLAudioElement | null>(null);
   const pausedRef   = useRef(false);
@@ -265,7 +260,7 @@ export default function KineticPlayer({ active, mood, duration, sound, onComplet
         style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none" }}
       />
 
-      {/* Header — in-flow, not fixed */}
+      {/* Header */}
       <div style={{
         position: "relative",
         zIndex: 10,
@@ -277,6 +272,7 @@ export default function KineticPlayer({ active, mood, duration, sound, onComplet
         alignItems: "flex-start",
         padding: isMobile ? "20px 24px 0" : "32px 32px 0",
       }}>
+        {/* Left: Back + voice mute */}
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <button
             onClick={onBack}
@@ -323,31 +319,8 @@ export default function KineticPlayer({ active, mood, duration, sound, onComplet
           </button>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          {sound !== "none" && (
-            <button
-              onClick={() => setMuted(m => !m)}
-              title={muted ? "Unmute" : "Mute sound"}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: 36,
-                height: 36,
-                borderRadius: "50%",
-                background: muted ? "var(--color-surface-high)" : "var(--color-surface-low)",
-                border: "none",
-                cursor: "pointer",
-                color: muted ? "var(--color-muted)" : "var(--color-text)",
-                transition: "background 200ms, color 200ms",
-              }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
-                {muted ? "volume_off" : SOUNDS.find(s => s.id === sound)?.icon ?? "volume_up"}
-              </span>
-            </button>
-          )}
-          <div style={{ textAlign: "right" }}>
+        {/* Right: Timer */}
+        <div style={{ textAlign: "right" }}>
           <p style={{
             fontFamily: "var(--font)",
             fontWeight: 800,
@@ -369,7 +342,6 @@ export default function KineticPlayer({ active, mood, duration, sound, onComplet
           }}>
             Remaining
           </p>
-          </div>
         </div>
       </div>
 
@@ -526,7 +498,7 @@ export default function KineticPlayer({ active, mood, duration, sound, onComplet
         </div>
       </div>
 
-      {/* Pause button — in-flow at the bottom */}
+      {/* Pause button */}
       <div style={{
         position: "relative",
         zIndex: 10,
