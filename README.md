@@ -91,68 +91,36 @@ Five minute sessions intentionally reuse the three minute recording so timing st
 If a file fails to load, playback stops quietly without breaking the rest of the screen.
 
 
-
 **Files**
 
-
-
 | Mood | 1 min | 3 min |
-
 |------|-------|-------|
-
 | Scattered | `artifacts/anchor/public/audio/scattered-1m.mp3` | `artifacts/anchor/public/audio/scattered-3m.mp3` |
-
 | Overwhelmed | `artifacts/anchor/public/audio/paralyzed-1m.mp3` | `artifacts/anchor/public/audio/paralyzed-3m.mp3` |
-
 | Restless | `artifacts/anchor/public/audio/buzzing-1m.mp3` | `artifacts/anchor/public/audio/buzzing-3m.mp3` |
-
-
 
 ## Streak and auth
 
-
-
 Completed days are remembered in **`localStorage`** under **`anchor_dates`**. The reward view shows the last twenty eight days in a calm grid.
-
-
 
 If you choose to sign in with your **Replit** account, your streak can sync to PostgreSQL and travel with you. Signing in is optional. Local streak behavior works the same whether you attach an account or not.
 
-
-
 Auth flows through **Replit OpenID Connect with PKCE**. Server sessions land in Postgres. Login shows up as a small link where it belongs, never in the middle of your breath cycle.
-
-
 
 ## Design tokens
 
-
-
 | Token | Value |
-
 |-------|-------|
-
 | Background | `#fdf8f8` |
-
 | Surface | `#ffffff` |
-
 | Primary | `#000000` |
-
 | Secondary | `#3e674b` |
-
 | Secondary container | `#bfeec9` |
-
 | Font | Manrope 400 to 800 |
-
 | Icons | Material Symbols Outlined |
-
 | Card radius | `40px` |
-
 | Pill radius | `9999px` |
-
 | Max width | `640px` centered |
-
-
 
 ## Stack
 
