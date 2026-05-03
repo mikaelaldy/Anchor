@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useAuth } from "@workspace/replit-auth-web";
 
@@ -18,52 +18,80 @@ interface Props {
 
 const steps = [
   {
-    icon: "diversity_3",
-    title: "Space for all perspectives",
-    body: "Designed to embrace neurodiversity and diverse life experiences. We believe stillness is a universal human right.",
+    num: "01",
+    title: "Tell us how you feel",
+    body: "You pick one of three states — scattered, heavy, or overwhelmed. That's it. No long questionnaire, no setup, no explaining yourself.",
   },
   {
-    icon: "accessibility_new",
-    title: "Accessible interactions",
-    body: "Simple, high-contrast, and keyboard-friendly. Whether you have thirty seconds or thirty minutes, Anchor meets you where you are.",
+    num: "02",
+    title: "Choose how long you have",
+    body: "One minute, three minutes, or five. All of them are real sessions. We're not going to tell you that one minute doesn't count.",
   },
   {
-    icon: "public",
-    title: "Open to the world",
-    body: "As an open-source project, Anchor is shaped by a global community of contributors from all walks of life.",
+    num: "03",
+    title: "Follow the breath",
+    body: "A breathing node walks you through inhale, hold, and exhale. Move your mouse and it spawns particle trails around the node — something for your hands to do while your mind slows down.",
   },
 ];
 
-export default function MarketingLanding({ active, onStart, onDashboard }: Props) {
+const cards = [
+  {
+    icon: "lock_open",
+    title: "No cost, ever",
+    body: "No free trial that ends. No premium tier. Nothing locked behind a paywall.",
+  },
+  {
+    icon: "code",
+    title: "Fully open source",
+    body: "MIT licensed and on GitHub. Read the code, fork it, suggest changes. It belongs to everyone.",
+  },
+  {
+    icon: "devices",
+    title: "Syncs with Replit",
+    body: "Sign in with your Replit account and your streak follows you across devices. Or don't sign in. Either way it works.",
+  },
+];
+
+const story = [
+  "Meditation apps have a problem. They're polished, expensive, and designed around the assumption that you have the time and headspace to sit quietly for twenty minutes. A lot of people don't.",
+  "Anchor started as a hackathon project built in under 24 hours. The goal was simple: make something anyone could open in a moment of stress and actually use. No onboarding. No account. No paywall standing between you and one minute of breathing.",
+  "It's free because it should be free. Stress doesn't check your subscription status. Neither should the thing that helps you manage it.",
+  "Anchor is open source and will stay that way. If you want to contribute, the GitHub is open.",
+];
+
+export default function MarketingLanding({ active, onStart }: Props) {
   const isMobile = useIsMobile();
   const containerRef = useRef<HTMLDivElement>(null);
-  const { isAuthenticated, login } = useAuth();
+  const { isAuthenticated } = useAuth();
 
-  const sectionGap = isMobile ? 80 : 120;
-  const px = isMobile ? 24 : 32;
-
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://storage.ko-fi.com/cdn/scripts/overlay-widget.js";
-    script.async = true;
-    script.onload = () => {
-      (window as any).kofiWidgetOverlay?.draw("mikascend", {
-        type: "floating-chat",
-        "floating-chat.donateButton.text": "Support",
-        "floating-chat.donateButton.background-color": "#e8e3df",
-        "floating-chat.donateButton.text-color": "#7a7370",
-      });
-    };
-    document.body.appendChild(script);
-    return () => {
-      document.body.removeChild(script);
-      document.querySelector(".kofi-overlay")?.remove();
-    };
-  }, []);
+  void isAuthenticated;
 
   const scrollTo = (id: string) => {
     const el = containerRef.current?.querySelector<HTMLElement>(`#${id}`);
-    if (el) containerRef.current?.scrollTo({ top: el.offsetTop - 72, behavior: "smooth" });
+    if (el) containerRef.current?.scrollTo({ top: el.offsetTop - 64, behavior: "smooth" });
+  };
+
+  const navLinkStyle: React.CSSProperties = {
+    fontFamily: "var(--font)",
+    fontWeight: 500,
+    fontSize: 14,
+    color: "var(--color-muted-mid)",
+    background: "none",
+    border: "none",
+    cursor: "pointer",
+    padding: "4px 0",
+    transition: "color 150ms",
+  };
+
+  const footerLinkStyle: React.CSSProperties = {
+    fontFamily: "var(--font)",
+    fontSize: 12,
+    fontWeight: 700,
+    letterSpacing: "0.12em",
+    textTransform: "uppercase",
+    color: "#a8a29e",
+    textDecoration: "none",
+    transition: "color 150ms",
   };
 
   return (
@@ -72,165 +100,86 @@ export default function MarketingLanding({ active, onStart, onDashboard }: Props
       className={`screen${active ? " active" : ""}`}
       style={{ background: "var(--color-bg)", overflowY: "auto", display: "block" }}
     >
+      <style>{`
+        @keyframes hero-pulse {
+          0%, 100% { transform: scale(1); box-shadow: 0 30px 60px rgba(0,0,0,0.06); }
+          50% { transform: scale(1.05); box-shadow: 0 40px 80px rgba(0,0,0,0.10); }
+        }
+        .hero-node { animation: hero-pulse 5s ease-in-out infinite; }
+      `}</style>
+
       {/* NAV */}
       <nav style={{
         position: "sticky",
         top: 0,
         zIndex: 50,
-        background: "rgba(253,248,248,0.8)",
+        background: "rgba(253,248,248,0.85)",
         backdropFilter: "blur(12px)",
-        boxShadow: "0 20px 50px rgba(0,0,0,0.05)",
       }}>
         <div style={{
-          maxWidth: 640,
+          maxWidth: 800,
           margin: "0 auto",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          padding: isMobile ? "14px 24px" : "16px 32px",
+          padding: isMobile ? "14px 24px" : "16px 40px",
         }}>
-          <div
+          <button
+            onClick={() => containerRef.current?.scrollTo({ top: 0, behavior: "smooth" })}
             style={{
-              display: "flex",
-              alignItems: "center",
-              paddingRight: isMobile ? 0 : 24,
-              marginRight: isMobile ? 0 : 12,
-              borderRight: isMobile ? "none" : "1px solid var(--color-outline-variant)",
+              fontFamily: "var(--font)",
+              fontWeight: 800,
+              fontSize: 20,
+              letterSpacing: "-0.02em",
+              color: "var(--color-text)",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: 0,
             }}
           >
-            <button
-              onClick={() => containerRef.current?.scrollTo({ top: 0, behavior: "smooth" })}
-              style={{
-                fontFamily: "var(--font)",
-                fontWeight: 800,
-                fontSize: 20,
-                letterSpacing: "-0.02em",
-                color: "var(--color-text)",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                padding: 0,
-              }}
-            >
-              Anchor
-            </button>
-          </div>
+            Anchor
+          </button>
 
           {!isMobile && (
-            <div style={{ display: "flex", alignItems: "center", gap: 24, marginLeft: 6 }}>
-              {[
-                { label: "Practice", id: "process" },
-                { label: "Community", id: "features" },
-              ].map(({ label, id }) => (
-                <button
-                  key={label}
-                  onClick={() => scrollTo(id)}
-                  style={{
-                    fontFamily: "var(--font)",
-                    fontWeight: 500,
-                    fontSize: 14,
-                    color: "var(--color-muted-mid)",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    padding: "4px 0",
-                    transition: "color 150ms",
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted-mid)"; }}
-                >
-                  {label}
-                </button>
-              ))}
+            <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
               <button
-                style={{
-                  fontFamily: "var(--font)",
-                  fontWeight: 500,
-                  fontSize: 14,
-                  color: "var(--color-muted-mid)",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 4,
-                  transition: "color 150ms",
-                }}
+                style={navLinkStyle}
+                onClick={() => scrollTo("how-it-works")}
                 onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted-mid)"; }}
               >
-                Support
-                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>favorite</span>
-              </button>
-              <button
-                onClick={onDashboard}
-                style={{
-                  fontFamily: "var(--font)",
-                  fontWeight: 500,
-                  fontSize: 14,
-                  color: "var(--color-muted-mid)",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 4,
-                  transition: "color 150ms",
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted-mid)"; }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>insights</span>
-                My journey
+                How it works
               </button>
               <a
                 href="https://github.com/mikaelaldy/Anchor"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  color: "var(--color-muted-mid)",
-                  transition: "color 150ms",
-                }}
+                style={{ ...navLinkStyle, textDecoration: "none" }}
                 onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted-mid)"; }}
               >
-                <GitHubIcon size={18} />
+                Open Source
               </a>
+              <button
+                style={navLinkStyle}
+                onClick={() => scrollTo("support")}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted-mid)"; }}
+              >
+                Support
+              </button>
             </div>
           )}
 
-          {/* Mobile: streak icon + start */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            {isMobile && (
-              <button
-                onClick={onDashboard}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: 36,
-                  height: 36,
-                  borderRadius: "50%",
-                  background: "var(--color-surface-low)",
-                  border: "none",
-                  cursor: "pointer",
-                  color: "var(--color-muted-mid)",
-                }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>insights</span>
-              </button>
-            )}
           <button
             onClick={onStart}
             style={{
               background: "var(--color-primary)",
               color: "var(--color-on-primary)",
               fontFamily: "var(--font)",
-              fontWeight: 700,
-              fontSize: 13,
-              letterSpacing: "0.04em",
+              fontWeight: 600,
+              fontSize: 14,
               padding: "9px 20px",
               borderRadius: "var(--radius-pill)",
               border: "none",
@@ -240,529 +189,461 @@ export default function MarketingLanding({ active, onStart, onDashboard }: Props
             onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(0.96)"; }}
             onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
           >
-            Start
+            Open App
           </button>
-          </div>
         </div>
       </nav>
 
-      {/* MAIN CONTENT */}
-      <main style={{ maxWidth: 640, margin: "0 auto", padding: `0 ${px}px` }}>
-
-        {/* HERO — large top margin matching reference mt-[240px] */}
-        <section style={{
-          marginTop: isMobile ? 120 : 200,
-          marginBottom: sectionGap,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          textAlign: "center",
-        }}>
+      {/* SECTION 1: HERO */}
+      <section style={{
+        minHeight: "calc(100vh - 56px)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: isMobile ? "60px 24px 80px" : "80px 40px 100px",
+      }}>
+        <div style={{ maxWidth: 640, width: "100%", textAlign: "center", margin: "0 auto" }}>
           <h1 style={{
             fontFamily: "var(--font)",
             fontWeight: 800,
-            fontSize: isMobile ? 44 : 56,
-            letterSpacing: "-0.02em",
+            fontSize: isMobile ? 40 : 64,
+            letterSpacing: "-0.03em",
             lineHeight: 1.05,
             color: "var(--color-text)",
-            marginBottom: 24,
+            marginBottom: 20,
           }}>
-            Stillness for everyone
+            {isMobile
+              ? "Stillness for the restless mind."
+              : <>Stillness for<br />the restless mind.</>}
           </h1>
+
           <p style={{
             fontFamily: "var(--font)",
             fontWeight: 400,
-            fontSize: isMobile ? 17 : 18,
-            lineHeight: 1.6,
+            fontSize: 19,
+            lineHeight: 1.7,
             color: "var(--color-muted-mid)",
-            maxWidth: 480,
-            marginBottom: sectionGap,
+            maxWidth: 460,
+            margin: "0 auto 40px",
           }}>
-            A visual deep breath designed for every mind, every background, and every ability. Practice presence, your way.
+            Anchor is a free meditation app. Pick how you feel, choose how long you have, and follow a breathing node that guides you through the whole thing. No account. No paywall. Just open it.
           </p>
 
-          {/* Breath node — three-layer */}
           <div style={{
-            position: "relative",
-            width: isMobile ? 240 : 256,
-            height: isMobile ? 240 : 256,
+            display: "flex",
+            gap: 12,
+            justifyContent: "center",
+            flexWrap: "wrap",
+            marginBottom: 24,
+          }}>
+            <button
+              onClick={onStart}
+              style={{
+                background: "var(--color-primary)",
+                color: "var(--color-on-primary)",
+                fontFamily: "var(--font)",
+                fontWeight: 600,
+                fontSize: 16,
+                padding: "16px 32px",
+                borderRadius: "var(--radius-pill)",
+                border: "none",
+                cursor: "pointer",
+                boxShadow: "0 20px 40px rgba(0,0,0,0.18)",
+                transition: "transform 200ms, box-shadow 200ms",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.02)";
+                e.currentTarget.style.boxShadow = "0 28px 56px rgba(0,0,0,0.24)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,0.18)";
+              }}
+            >
+              Start breathing
+            </button>
+            <button
+              onClick={() => scrollTo("how-it-works")}
+              style={{
+                background: "transparent",
+                color: "var(--color-text)",
+                fontFamily: "var(--font)",
+                fontWeight: 600,
+                fontSize: 16,
+                padding: "16px 32px",
+                borderRadius: "var(--radius-pill)",
+                border: "1px solid var(--color-outline-variant)",
+                cursor: "pointer",
+                transition: "background 150ms",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "var(--color-surface-low)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+            >
+              See how it works
+            </button>
+          </div>
+
+          <p style={{
+            fontFamily: "var(--font)",
+            fontSize: 13,
+            color: "var(--color-muted)",
+            letterSpacing: "0.06em",
+            marginBottom: 64,
+          }}>
+            Free forever · No sign-up needed · MIT licensed
+          </p>
+
+          {/* Breathing node */}
+          <div style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
           }}>
-            {/* Outer thin border ring */}
             <div style={{
-              position: "absolute",
-              inset: 0,
-              borderRadius: "50%",
-              border: "1px solid var(--color-outline-variant)",
-              opacity: 0.2,
-            }} />
-            {/* Inner thicker border ring */}
-            <div style={{
-              position: "absolute",
-              inset: "10%",
-              borderRadius: "50%",
-              border: "2px solid rgba(0,0,0,0.08)",
-            }} />
-            {/* Black circle with air icon */}
-            <div
-              className="breath-node"
-              style={{
-                width: isMobile ? 124 : 136,
-                height: isMobile ? 124 : 136,
+              position: "relative",
+              width: 200,
+              height: 200,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}>
+              <div style={{
+                position: "absolute",
+                inset: 0,
                 borderRadius: "50%",
-                background: "var(--color-primary)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                boxShadow: "0 40px 80px rgba(0,0,0,0.15)",
-              }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 40, color: "var(--color-on-primary)" }}>
-                air
-              </span>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA SECTION */}
-        <section style={{ marginBottom: sectionGap, display: "flex", flexDirection: "column", gap: 16 }}>
-          <button
-            onClick={onStart}
-            style={{
-              width: "100%",
-              background: "var(--color-primary)",
-              color: "var(--color-on-primary)",
-              fontFamily: "var(--font)",
-              fontWeight: 700,
-              fontSize: 14,
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              padding: "24px",
-              borderRadius: "var(--radius-pill)",
-              border: "none",
-              cursor: "pointer",
-              boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
-              transition: "transform 200ms, box-shadow 200ms",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "scale(1.02)";
-              e.currentTarget.style.boxShadow = "0 28px 56px rgba(0,0,0,0.2)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "scale(1)";
-              e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,0.15)";
-            }}
-          >
-            Start meditating
-          </button>
-
-          {!isAuthenticated && (
-            <button
-              onClick={login}
-              style={{
-                width: "100%",
-                background: "var(--color-surface)",
-                color: "var(--color-primary)",
-                fontFamily: "var(--font)",
-                fontWeight: 700,
-                fontSize: 14,
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                padding: "20px 24px",
-                borderRadius: "var(--radius-pill)",
-                border: "none",
-                cursor: "pointer",
-                boxShadow: "0 10px 40px rgba(0,0,0,0.05)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 12,
-                transition: "background 150ms",
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "var(--color-surface-mid)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "var(--color-surface)"; }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 20 }}>login</span>
-              Sign in with Replit
-            </button>
-          )}
-
-          <div style={{ marginTop: 8, textAlign: "center" }}>
-            <p style={{
-              fontFamily: "var(--font)",
-              fontWeight: 700,
-              fontSize: 12,
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              color: "rgba(68,71,72,0.6)",
-              marginBottom: 8,
-            }}>
-              Our Three Commitments
-            </p>
-            <p style={{
-              fontFamily: "var(--font)",
-              fontWeight: 600,
-              fontSize: 15,
-              color: "var(--color-text)",
-            }}>
-              Free forever • Open source • For everyone
-            </p>
-          </div>
-        </section>
-
-        {/* PROCESS — INCLUSIVE BY DESIGN */}
-        <section id="process" style={{ marginBottom: sectionGap }}>
-          <h2 style={{
-            fontFamily: "var(--font)",
-            fontWeight: 700,
-            fontSize: 13,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            textAlign: "center",
-            color: "var(--color-text)",
-            opacity: 0.6,
-            marginBottom: sectionGap,
-          }}>
-            Inclusive by design
-          </h2>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: sectionGap }}>
-            {steps.map((step, i) => (
-              <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
-                <div style={{
-                  width: 48,
-                  height: 48,
+                border: "1px solid var(--color-outline-variant)",
+                opacity: 0.3,
+              }} />
+              <div
+                className="hero-node"
+                style={{
+                  width: 130,
+                  height: 130,
                   borderRadius: "50%",
-                  background: "var(--color-secondary-container)",
+                  background: "var(--color-surface)",
+                  boxShadow: "0 30px 60px rgba(0,0,0,0.06)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  marginBottom: 24,
-                  flexShrink: 0,
-                }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: 22, color: "var(--color-on-secondary-container)" }}>
-                    {step.icon}
-                  </span>
-                </div>
-                <h3 style={{
+                }}
+              >
+                <span style={{
                   fontFamily: "var(--font)",
                   fontWeight: 700,
-                  fontSize: isMobile ? 26 : 32,
-                  letterSpacing: "-0.01em",
-                  lineHeight: 1.2,
+                  fontSize: 15,
                   color: "var(--color-text)",
-                  marginBottom: 16,
                 }}>
-                  {step.title}
-                </h3>
+                  Breathe
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 2: HOW IT WORKS */}
+      <section id="how-it-works" style={{
+        padding: isMobile ? "80px 24px" : "128px 40px",
+      }}>
+        <div style={{ maxWidth: 560, margin: "0 auto" }}>
+          <p style={{
+            fontFamily: "var(--font)",
+            fontWeight: 700,
+            fontSize: 12,
+            letterSpacing: "0.15em",
+            textTransform: "uppercase",
+            color: "var(--color-on-secondary-container)",
+            textAlign: "center",
+            marginBottom: 80,
+          }}>
+            HOW IT WORKS
+          </p>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 80 }}>
+            {steps.map(({ num, title, body }) => (
+              <div key={num} style={{ display: "flex", alignItems: "flex-start", gap: 24 }}>
+                <span style={{
+                  fontFamily: "var(--font)",
+                  fontWeight: 800,
+                  fontSize: 48,
+                  color: "var(--color-outline-variant)",
+                  opacity: 0.4,
+                  lineHeight: 1,
+                  flexShrink: 0,
+                  width: 72,
+                }}>
+                  {num}
+                </span>
+                <div>
+                  <h3 style={{
+                    fontFamily: "var(--font)",
+                    fontWeight: 700,
+                    fontSize: 22,
+                    color: "var(--color-text)",
+                    marginBottom: 8,
+                    lineHeight: 1.2,
+                  }}>
+                    {title}
+                  </h3>
+                  <p style={{
+                    fontFamily: "var(--font)",
+                    fontWeight: 400,
+                    fontSize: 17,
+                    color: "var(--color-muted-mid)",
+                    lineHeight: 1.7,
+                  }}>
+                    {body}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 3: WHO IT'S FOR */}
+      <section style={{
+        background: "var(--color-surface-low)",
+        padding: isMobile ? "80px 24px" : "128px 40px",
+      }}>
+        <div style={{ maxWidth: 560, margin: "0 auto", textAlign: "center" }}>
+          <h2 style={{
+            fontFamily: "var(--font)",
+            fontWeight: 800,
+            fontSize: isMobile ? 30 : 38,
+            letterSpacing: "-0.02em",
+            lineHeight: 1.15,
+            color: "var(--color-text)",
+            marginBottom: 24,
+          }}>
+            Built for every kind of mind.
+          </h2>
+          <p style={{
+            fontFamily: "var(--font)",
+            fontWeight: 400,
+            fontSize: 18,
+            lineHeight: 1.75,
+            color: "var(--color-muted-mid)",
+            maxWidth: 480,
+            margin: "0 auto 64px",
+          }}>
+            Most wellness apps feel like they were made for one type of person. Anchor wasn't. It's for people of every age, background, culture, ability, thinking style, and life experience. You don't need to already be calm to use it.
+          </p>
+
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr",
+            gap: 20,
+            textAlign: "left",
+          }}>
+            {cards.map(({ icon, title, body }) => (
+              <div key={title} style={{
+                background: "var(--color-surface)",
+                padding: 32,
+                borderRadius: 28,
+                boxShadow: "0 16px 40px rgba(0,0,0,0.04)",
+              }}>
+                <span className="material-symbols-outlined" style={{
+                  fontSize: 28,
+                  color: "var(--color-on-secondary-container)",
+                  display: "block",
+                  marginBottom: 20,
+                }}>
+                  {icon}
+                </span>
+                <h4 style={{
+                  fontFamily: "var(--font)",
+                  fontWeight: 700,
+                  fontSize: 18,
+                  color: "var(--color-text)",
+                  marginBottom: 8,
+                }}>
+                  {title}
+                </h4>
                 <p style={{
                   fontFamily: "var(--font)",
                   fontWeight: 400,
-                  fontSize: isMobile ? 16 : 18,
-                  lineHeight: 1.6,
+                  fontSize: 15,
                   color: "var(--color-muted-mid)",
+                  lineHeight: 1.6,
                 }}>
-                  {step.body}
+                  {body}
                 </p>
               </div>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* FEATURES BENTO */}
-        <section id="features" style={{ marginBottom: sectionGap }}>
+      {/* SECTION 4: THE STORY */}
+      <section style={{
+        padding: isMobile ? "80px 24px" : "128px 40px",
+      }}>
+        <div style={{ maxWidth: 560, margin: "0 auto" }}>
+          <h2 style={{
+            fontFamily: "var(--font)",
+            fontWeight: 800,
+            fontSize: isMobile ? 30 : 38,
+            letterSpacing: "-0.02em",
+            lineHeight: 1.15,
+            color: "var(--color-text)",
+            marginBottom: 32,
+          }}>
+            Why we built this.
+          </h2>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+            {story.map((text, i) => (
+              <p key={i} style={{
+                fontFamily: "var(--font)",
+                fontWeight: 400,
+                fontSize: 18,
+                lineHeight: 1.8,
+                color: "var(--color-muted-mid)",
+              }}>
+                {text}
+              </p>
+            ))}
+          </div>
+
+          <div style={{
+            marginTop: 40,
+            display: "flex",
+            gap: 16,
+            flexWrap: "wrap",
+          }}>
+            <a
+              href="https://github.com/mikaelaldy/Anchor"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "12px 24px",
+                borderRadius: "var(--radius-pill)",
+                border: "1px solid var(--color-outline-variant)",
+                background: "transparent",
+                fontFamily: "var(--font)",
+                fontWeight: 600,
+                fontSize: 15,
+                color: "var(--color-text)",
+                textDecoration: "none",
+                transition: "background 150ms",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "var(--color-surface-low)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+            >
+              <GitHubIcon size={16} />
+              Open on GitHub
+            </a>
+            <button
+              onClick={onStart}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                padding: "12px 24px",
+                borderRadius: "var(--radius-pill)",
+                background: "var(--color-primary)",
+                color: "var(--color-on-primary)",
+                fontFamily: "var(--font)",
+                fontWeight: 600,
+                fontSize: 15,
+                border: "none",
+                cursor: "pointer",
+                transition: "transform 150ms",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.02)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
+            >
+              Try the app
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 5: KO-FI SUPPORT */}
+      <section id="support" style={{
+        background: "var(--color-surface-low)",
+        padding: isMobile ? "80px 24px" : "80px 40px",
+      }}>
+        <div style={{ maxWidth: 560, margin: "0 auto", textAlign: "center" }}>
+          <p style={{
+            fontFamily: "var(--font)",
+            fontWeight: 700,
+            fontSize: 12,
+            letterSpacing: "0.15em",
+            textTransform: "uppercase",
+            color: "var(--color-on-secondary-container)",
+            marginBottom: 16,
+          }}>
+            SUPPORT THE PROJECT
+          </p>
           <h2 style={{
             fontFamily: "var(--font)",
             fontWeight: 700,
-            fontSize: isMobile ? 28 : 32,
+            fontSize: 28,
             letterSpacing: "-0.01em",
-            lineHeight: 1.2,
             color: "var(--color-text)",
-            textAlign: "center",
-            marginBottom: sectionGap,
+            marginBottom: 16,
           }}>
-            Built for humanity
+            Keep Anchor free for everyone.
           </h2>
-
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-            gap: 16,
+          <p style={{
+            fontFamily: "var(--font)",
+            fontWeight: 400,
+            fontSize: 17,
+            lineHeight: 1.7,
+            color: "var(--color-muted-mid)",
+            maxWidth: 460,
+            margin: "0 auto 40px",
           }}>
-            {/* Card 1 — white */}
-            <div style={{
-              background: "var(--color-surface)",
-              padding: isMobile ? 32 : 40,
-              borderRadius: "var(--radius-card)",
-              boxShadow: "0 30px 60px rgba(0,0,0,0.03)",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              minHeight: 320,
-            }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 36, color: "var(--color-primary)", marginBottom: 28 }}>
-                all_inclusive
-              </span>
-              <div>
-                <h4 style={{
-                  fontFamily: "var(--font)",
-                  fontWeight: 700,
-                  fontSize: 24,
-                  lineHeight: 1.2,
-                  color: "var(--color-text)",
-                  marginBottom: 10,
-                }}>
-                  Universal Focus
-                </h4>
-                <p style={{
-                  fontFamily: "var(--font)",
-                  fontSize: 14,
-                  lineHeight: 1.6,
-                  color: "var(--color-muted-mid)",
-                }}>
-                  A distraction-free environment that respects your cognitive load, regardless of how your mind works.
-                </p>
-              </div>
-            </div>
+            Anchor is free and open source. If it has helped you find a moment of calm, consider buying me a coffee. It helps keep the project alive and ad-free.
+          </p>
 
-            {/* Card 2 — black */}
-            <div style={{
-              background: "var(--color-primary)",
-              padding: isMobile ? 32 : 40,
-              borderRadius: "var(--radius-card)",
-              boxShadow: "0 30px 60px rgba(0,0,0,0.1)",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              minHeight: 320,
-            }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 36, color: "var(--color-on-primary)", marginBottom: 28 }}>
-                group
-              </span>
-              <div>
-                <h4 style={{
-                  fontFamily: "var(--font)",
-                  fontWeight: 700,
-                  fontSize: 24,
-                  lineHeight: 1.2,
-                  color: "var(--color-on-primary)",
-                  marginBottom: 10,
-                }}>
-                  Diverse Anchors
-                </h4>
-                <p style={{
-                  fontFamily: "var(--font)",
-                  fontSize: 14,
-                  lineHeight: 1.6,
-                  color: "rgba(255,255,255,0.6)",
-                }}>
-                  Visual and auditory cues for different sensory preferences and cultural contexts.
-                </p>
-              </div>
-            </div>
-
-            {/* Card 3 — wide, spans 2 cols */}
-            <div style={{
-              gridColumn: isMobile ? "1" : "1 / -1",
-              background: "rgba(191,238,201,0.25)",
-              padding: isMobile ? 32 : 40,
-              borderRadius: "var(--radius-card)",
-              boxShadow: "0 30px 60px rgba(0,0,0,0.02)",
-            }}>
-              <div style={{
-                display: "flex",
-                flexDirection: isMobile ? "column" : "row",
-                gap: 32,
-                alignItems: "center",
-              }}>
-                {/* Image placeholder */}
-                <div style={{
-                  width: isMobile ? "100%" : "50%",
-                  height: 192,
-                  flexShrink: 0,
-                  borderRadius: 24,
-                  background: "linear-gradient(135deg, var(--color-secondary-container) 0%, var(--color-surface-high) 100%)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  overflow: "hidden",
-                }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: 48, color: "var(--color-on-secondary-container)", opacity: 0.5 }}>
-                    people
-                  </span>
-                </div>
-                <div style={{ flex: 1 }}>
-                  <h4 style={{
-                    fontFamily: "var(--font)",
-                    fontWeight: 700,
-                    fontSize: 24,
-                    lineHeight: 1.2,
-                    color: "var(--color-text)",
-                    marginBottom: 16,
-                  }}>
-                    Empathetic Architecture
-                  </h4>
-                  <p style={{
-                    fontFamily: "var(--font)",
-                    fontSize: 14,
-                    lineHeight: 1.6,
-                    color: "var(--color-muted-mid)",
-                  }}>
-                    We reduce decision fatigue by prioritizing clarity. Our interface is a bridge to stillness for users of all ages and technical abilities.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* FINAL CALMNESS SECTION */}
-        <section style={{
-          marginBottom: sectionGap,
-          borderRadius: "var(--radius-card)",
-          overflow: "hidden",
-          boxShadow: "0 40px 80px rgba(0,0,0,0.08)",
-        }}>
-          <div style={{
-            width: "100%",
-            height: 360,
-            background: "linear-gradient(160deg, var(--color-surface-highest) 0%, var(--color-surface-mid) 40%, var(--color-secondary-container) 100%)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexDirection: "column",
-            gap: 12,
-          }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 56, color: "var(--color-on-secondary-container)", opacity: 0.4 }}>
-              landscape
-            </span>
-            <p style={{
-              fontFamily: "var(--font)",
-              fontWeight: 700,
-              fontSize: 13,
-              letterSpacing: "0.15em",
-              textTransform: "uppercase",
-              color: "var(--color-on-secondary-container)",
-              opacity: 0.5,
-            }}>
-              Stillness awaits
-            </p>
-          </div>
-        </section>
-
-        {/* KO-FI DONATION SECTION */}
-        <section style={{ marginBottom: sectionGap }}>
           <div style={{
             background: "var(--color-surface)",
-            borderRadius: "var(--radius-card)",
-            padding: isMobile ? 32 : 40,
-            boxShadow: "0 30px 60px rgba(0,0,0,0.04)",
+            borderRadius: 24,
+            padding: 32,
+            boxShadow: "0 20px 40px rgba(0,0,0,0.04)",
+            maxWidth: 380,
+            margin: "0 auto",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: 24,
+            gap: 20,
           }}>
+            <div style={{
+              width: 56,
+              height: 56,
+              borderRadius: 16,
+              background: "#FF5E5B",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 28,
+            }}>
+              ☕
+            </div>
             <div style={{ textAlign: "center" }}>
               <p style={{
                 fontFamily: "var(--font)",
                 fontWeight: 700,
-                fontSize: 12,
-                letterSpacing: "0.15em",
-                textTransform: "uppercase",
-                color: "var(--color-muted)",
-                marginBottom: 10,
-              }}>
-                Support the project
-              </p>
-              <h3 style={{
-                fontFamily: "var(--font)",
-                fontWeight: 700,
-                fontSize: isMobile ? 24 : 28,
-                letterSpacing: "-0.01em",
+                fontSize: 17,
                 color: "var(--color-text)",
-                marginBottom: 12,
+                marginBottom: 6,
               }}>
-                Keep Anchor free for everyone
-              </h3>
+                Buy me a coffee
+              </p>
               <p style={{
                 fontFamily: "var(--font)",
-                fontSize: 15,
-                lineHeight: 1.6,
-                color: "var(--color-muted-mid)",
-                maxWidth: 400,
-                margin: "0 auto",
+                fontSize: 14,
+                color: "var(--color-muted)",
+                lineHeight: 1.5,
               }}>
-                Anchor is free and open source. If it's helped you find a moment of calm, consider buying me a coffee.
+                Keep Anchor free and open source
               </p>
             </div>
-
-            {/* Ko-fi card */}
-            <a
-              href="https://ko-fi.com/mikascend"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                width: "100%",
-                padding: isMobile ? "24px 28px" : "28px 36px",
-                borderRadius: 24,
-                background: "var(--color-surface-low)",
-                border: "1px solid var(--color-surface-high)",
-                textDecoration: "none",
-                transition: "background 150ms, transform 150ms",
-                cursor: "pointer",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "var(--color-surface-mid)";
-                e.currentTarget.style.transform = "scale(1.01)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "var(--color-surface-low)";
-                e.currentTarget.style.transform = "scale(1)";
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                <div style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 14,
-                  background: "#FF5E5B",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                  fontSize: 24,
-                }}>
-                  ☕
-                </div>
-                <div>
-                  <p style={{
-                    fontFamily: "var(--font)",
-                    fontWeight: 700,
-                    fontSize: 15,
-                    color: "var(--color-text)",
-                    marginBottom: 3,
-                  }}>
-                    ko-fi.com/mikascend
-                  </p>
-                  <p style={{
-                    fontFamily: "var(--font)",
-                    fontSize: 13,
-                    color: "var(--color-muted)",
-                  }}>
-                    Buy me a coffee to keep Anchor free
-                  </p>
-                </div>
-              </div>
-              <span className="material-symbols-outlined" style={{ fontSize: 20, color: "var(--color-muted)", flexShrink: 0 }}>
-                open_in_new
-              </span>
-            </a>
-
             <a
               href="https://ko-fi.com/mikascend"
               target="_blank"
@@ -771,14 +652,13 @@ export default function MarketingLanding({ active, onStart, onDashboard }: Props
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 8,
-                padding: "14px 32px",
+                padding: "12px 28px",
                 borderRadius: "var(--radius-pill)",
                 background: "var(--color-primary)",
                 color: "var(--color-on-primary)",
                 fontFamily: "var(--font)",
                 fontWeight: 700,
                 fontSize: 14,
-                letterSpacing: "0.08em",
                 textDecoration: "none",
                 boxShadow: "0 10px 30px rgba(0,0,0,0.12)",
                 transition: "transform 150ms, box-shadow 150ms",
@@ -792,127 +672,130 @@ export default function MarketingLanding({ active, onStart, onDashboard }: Props
                 e.currentTarget.style.boxShadow = "0 10px 30px rgba(0,0,0,0.12)";
               }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>favorite</span>
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>favorite</span>
               Support on Ko-fi
             </a>
           </div>
-        </section>
+        </div>
+      </section>
 
-      </main>
+      {/* SECTION 6: FINAL CTA */}
+      <section style={{
+        background: "var(--color-primary)",
+        padding: isMobile ? "80px 24px" : "112px 40px",
+        textAlign: "center",
+      }}>
+        <h2 style={{
+          fontFamily: "var(--font)",
+          fontWeight: 800,
+          fontSize: isMobile ? 36 : 48,
+          letterSpacing: "-0.02em",
+          lineHeight: 1.1,
+          color: "var(--color-on-primary)",
+          marginBottom: 16,
+        }}>
+          Your brain deserves a break.
+        </h2>
+        <p style={{
+          fontFamily: "var(--font)",
+          fontWeight: 400,
+          fontSize: 18,
+          color: "var(--color-on-primary)",
+          opacity: 0.6,
+          marginBottom: 40,
+        }}>
+          No account. No download. Open right now.
+        </p>
+        <button
+          onClick={onStart}
+          style={{
+            background: "#fff",
+            color: "var(--color-primary)",
+            fontFamily: "var(--font)",
+            fontWeight: 700,
+            fontSize: 16,
+            padding: "20px 40px",
+            borderRadius: "var(--radius-pill)",
+            border: "none",
+            cursor: "pointer",
+            boxShadow: "0 20px 40px rgba(0,0,0,0.25)",
+            transition: "transform 200ms",
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.02)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
+        >
+          Open Anchor
+        </button>
+      </section>
 
       {/* FOOTER */}
       <footer style={{
-        background: "var(--color-bg)",
-        borderTop: "1px solid var(--color-surface-high)",
-        padding: isMobile ? "48px 24px 56px" : "64px 32px 72px",
+        background: "#fafaf9",
+        padding: isMobile ? "48px 24px" : "56px 40px",
       }}>
-        <div style={{
-          maxWidth: 640,
-          margin: "0 auto",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 24,
-          textAlign: "center",
-        }}>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "center", gap: 24 }}>
-            {["Privacy", "Terms", "Support Anchor"].map((label) => (
-              <a
-                key={label}
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                style={{
-                  fontFamily: "var(--font)",
-                  fontSize: 12,
-                  fontWeight: 700,
-                  letterSpacing: "0.15em",
-                  textTransform: "uppercase",
-                  color: "var(--color-muted)",
-                  textDecoration: "none",
-                  transition: "color 150ms",
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted)"; }}
-              >
-                {label}
-              </a>
-            ))}
-            <a
-              href="https://github.com/mikaelaldy/Anchor"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                fontFamily: "var(--font)",
-                fontSize: 12,
-                fontWeight: 700,
-                letterSpacing: "0.15em",
-                textTransform: "uppercase",
-                color: "var(--color-muted)",
-                textDecoration: "none",
-                transition: "color 150ms",
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted)"; }}
-            >
-              <GitHubIcon size={14} />
-              Open Source
-            </a>
-          </div>
-
+        <div style={{ maxWidth: 640, margin: "0 auto" }}>
           <div style={{
-            paddingTop: 20,
-            borderTop: "1px solid var(--color-surface-high)",
-            width: "100%",
             display: "flex",
-            flexDirection: "column",
+            justifyContent: "space-between",
             alignItems: "center",
+            flexWrap: "wrap",
             gap: 16,
           }}>
-            <p style={{
+            <span style={{
               fontFamily: "var(--font)",
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              color: "var(--color-muted)",
-              opacity: 0.8,
+              fontWeight: 800,
+              fontSize: 18,
+              letterSpacing: "-0.02em",
+              color: "var(--color-text)",
             }}>
-              © 2026 Anchor. Free, open, and for everyone.
-            </p>
-            <a
-              href="https://ko-fi.com/mikascend"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 8,
-                padding: "10px 24px",
-                borderRadius: "var(--radius-pill)",
-                border: "1px solid var(--color-surface-high)",
-                background: "transparent",
-                fontFamily: "var(--font)",
-                fontSize: 14,
-                fontWeight: 500,
-                color: "var(--color-muted-mid)",
-                textDecoration: "none",
-                transition: "background 150ms, color 150ms",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "var(--color-surface-low)";
-                e.currentTarget.style.color = "var(--color-text)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "transparent";
-                e.currentTarget.style.color = "var(--color-muted-mid)";
-              }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>favorite</span>
-              Donate on Ko-fi
-            </a>
+              Anchor
+            </span>
+            <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center" }}>
+              {[
+                { label: "Privacy", href: "#", external: false },
+                { label: "Terms", href: "#", external: false },
+                { label: "GitHub", href: "https://github.com/mikaelaldy/Anchor", external: true },
+              ].map(({ label, href, external }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target={external ? "_blank" : undefined}
+                  rel={external ? "noopener noreferrer" : undefined}
+                  onClick={!external ? (e) => e.preventDefault() : undefined}
+                  style={footerLinkStyle}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = "#a8a29e"; }}
+                >
+                  {label}
+                </a>
+              ))}
+              <a
+                href="https://ko-fi.com/mikascend"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={footerLinkStyle}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = "#a8a29e"; }}
+              >
+                Support
+              </a>
+            </div>
+          </div>
+
+          <div style={{ borderTop: "1px solid #e7e5e4", margin: "32px 0" }} />
+
+          <div style={{
+            display: "flex",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 12,
+          }}>
+            <span style={{ fontFamily: "var(--font)", fontSize: 12, color: "#a8a29e" }}>
+              © 2026 Anchor. Free, open, for everyone.
+            </span>
+            <span style={{ fontFamily: "var(--font)", fontSize: 12, color: "#a8a29e" }}>
+              Built with Replit Agent
+            </span>
           </div>
         </div>
       </footer>
