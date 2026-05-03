@@ -89,25 +89,35 @@ export default function MarketingLanding({ active, onStart, onDashboard }: Props
           alignItems: "center",
           padding: isMobile ? "14px 24px" : "16px 32px",
         }}>
-          <button
-            onClick={() => containerRef.current?.scrollTo({ top: 0, behavior: "smooth" })}
+          <div
             style={{
-              fontFamily: "var(--font)",
-              fontWeight: 800,
-              fontSize: 20,
-              letterSpacing: "-0.02em",
-              color: "var(--color-text)",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              padding: 0,
+              display: "flex",
+              alignItems: "center",
+              paddingRight: isMobile ? 0 : 24,
+              marginRight: isMobile ? 0 : 12,
+              borderRight: isMobile ? "none" : "1px solid var(--color-outline-variant)",
             }}
           >
-            Anchor
-          </button>
+            <button
+              onClick={() => containerRef.current?.scrollTo({ top: 0, behavior: "smooth" })}
+              style={{
+                fontFamily: "var(--font)",
+                fontWeight: 800,
+                fontSize: 20,
+                letterSpacing: "-0.02em",
+                color: "var(--color-text)",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+              }}
+            >
+              Anchor
+            </button>
+          </div>
 
           {!isMobile && (
-            <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 24, marginLeft: 6 }}>
               {[
                 { label: "Practice", id: "process" },
                 { label: "Community", id: "features" },
