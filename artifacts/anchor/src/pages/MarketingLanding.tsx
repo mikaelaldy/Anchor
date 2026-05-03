@@ -49,9 +49,9 @@ export default function MarketingLanding({ active, onStart, onDashboard }: Props
     script.onload = () => {
       (window as any).kofiWidgetOverlay?.draw("mikascend", {
         type: "floating-chat",
-        "floating-chat.donateButton.text": "Support Anchor",
-        "floating-chat.donateButton.background-color": "#000000",
-        "floating-chat.donateButton.text-color": "#ffffff",
+        "floating-chat.donateButton.text": "Support",
+        "floating-chat.donateButton.background-color": "#e8e3df",
+        "floating-chat.donateButton.text-color": "#7a7370",
       });
     };
     document.body.appendChild(script);
