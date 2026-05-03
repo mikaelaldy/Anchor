@@ -87,6 +87,7 @@ export default function MarketingLanding({ active, onStart, onDashboard }: Props
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          gap: 16,
           padding: isMobile ? "14px 24px" : "16px 32px",
         }}>
           <button
@@ -101,100 +102,112 @@ export default function MarketingLanding({ active, onStart, onDashboard }: Props
               border: "none",
               cursor: "pointer",
               padding: 0,
+              flexShrink: 0,
             }}
           >
             Anchor
           </button>
 
-          {!isMobile && (
-            <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-              {[
-                { label: "Practice", id: "process" },
-                { label: "Community", id: "features" },
-              ].map(({ label, id }) => (
+          {/* One cluster on the right: links + GitHub + Start (avoids 3-way space-between gap) */}
+          <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 8 : 14, flexShrink: 0, marginLeft: "auto" }}>
+            {!isMobile && (
+              <>
+                {[
+                  { label: "Practice", id: "process" },
+                  { label: "Community", id: "features" },
+                ].map(({ label, id }) => (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => scrollTo(id)}
+                    style={{
+                      fontFamily: "var(--font)",
+                      fontWeight: 500,
+                      fontSize: 13,
+                      color: "var(--color-muted-mid)",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      padding: "4px 0",
+                      whiteSpace: "nowrap",
+                      transition: "color 150ms",
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted-mid)"; }}
+                  >
+                    {label}
+                  </button>
+                ))}
                 <button
-                  key={label}
-                  onClick={() => scrollTo(id)}
+                  type="button"
+                  onClick={() => scrollTo("support")}
                   style={{
                     fontFamily: "var(--font)",
                     fontWeight: 500,
-                    fontSize: 14,
+                    fontSize: 13,
+                    color: "var(--color-muted)",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 3,
+                    padding: "4px 0",
+                    whiteSpace: "nowrap",
+                    transition: "color 150ms",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-muted-mid)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted)"; }}
+                >
+                  Support
+                  <span className="material-symbols-outlined" style={{ fontSize: 15 }}>favorite</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={onDashboard}
+                  style={{
+                    fontFamily: "var(--font)",
+                    fontWeight: 500,
+                    fontSize: 13,
                     color: "var(--color-muted-mid)",
                     background: "none",
                     border: "none",
                     cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 4,
                     padding: "4px 0",
+                    whiteSpace: "nowrap",
                     transition: "color 150ms",
                   }}
                   onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
                   onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted-mid)"; }}
                 >
-                  {label}
+                  <span className="material-symbols-outlined" style={{ fontSize: 18 }}>insights</span>
+                  My journey
                 </button>
-              ))}
-              <button
-                style={{
-                  fontFamily: "var(--font)",
-                  fontWeight: 500,
-                  fontSize: 14,
-                  color: "var(--color-muted-mid)",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 4,
-                  transition: "color 150ms",
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted-mid)"; }}
-              >
-                Support
-                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>favorite</span>
-              </button>
-              <button
-                onClick={onDashboard}
-                style={{
-                  fontFamily: "var(--font)",
-                  fontWeight: 500,
-                  fontSize: 14,
-                  color: "var(--color-muted-mid)",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 4,
-                  transition: "color 150ms",
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted-mid)"; }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>insights</span>
-                My journey
-              </button>
-              <a
-                href="https://github.com/mikaelaldy/Anchor"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  color: "var(--color-muted-mid)",
-                  transition: "color 150ms",
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted-mid)"; }}
-              >
-                <GitHubIcon size={18} />
-              </a>
-            </div>
-          )}
-
-          {/* Mobile: streak icon + start */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <a
+                  href="https://github.com/mikaelaldy/Anchor"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="GitHub repository"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    color: "var(--color-muted-mid)",
+                    transition: "color 150ms",
+                    cursor: "pointer",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted-mid)"; }}
+                >
+                  <GitHubIcon size={18} />
+                </a>
+              </>
+            )}
             {isMobile && (
               <button
+                type="button"
                 onClick={onDashboard}
                 style={{
                   display: "flex",
@@ -212,26 +225,28 @@ export default function MarketingLanding({ active, onStart, onDashboard }: Props
                 <span className="material-symbols-outlined" style={{ fontSize: 20 }}>insights</span>
               </button>
             )}
-          <button
-            onClick={onStart}
-            style={{
-              background: "var(--color-primary)",
-              color: "var(--color-on-primary)",
-              fontFamily: "var(--font)",
-              fontWeight: 700,
-              fontSize: 13,
-              letterSpacing: "0.04em",
-              padding: "9px 20px",
-              borderRadius: "var(--radius-pill)",
-              border: "none",
-              cursor: "pointer",
-              transition: "transform 150ms",
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(0.96)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
-          >
-            Start
-          </button>
+            <button
+              type="button"
+              onClick={onStart}
+              style={{
+                background: "var(--color-primary)",
+                color: "var(--color-on-primary)",
+                fontFamily: "var(--font)",
+                fontWeight: 700,
+                fontSize: 13,
+                letterSpacing: "0.04em",
+                padding: "9px 20px",
+                borderRadius: "var(--radius-pill)",
+                border: "none",
+                cursor: "pointer",
+                transition: "transform 150ms",
+                flexShrink: 0,
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(0.96)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
+            >
+              Start
+            </button>
           </div>
         </div>
       </nav>
@@ -643,7 +658,7 @@ export default function MarketingLanding({ active, onStart, onDashboard }: Props
         </section>
 
         {/* KO-FI DONATION SECTION */}
-        <section style={{ marginBottom: sectionGap }}>
+        <section id="support" style={{ marginBottom: sectionGap }}>
           <div style={{
             background: "var(--color-surface)",
             borderRadius: "var(--radius-card-sm)",
