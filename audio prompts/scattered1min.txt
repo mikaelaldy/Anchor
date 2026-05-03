@@ -1,0 +1,17 @@
+Hey. You made it here.
+
+Breathe in slowly.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Let it go.
+<break time="6s"/>
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+That's it. You're anchored.

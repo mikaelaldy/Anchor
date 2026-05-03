@@ -1,0 +1,17 @@
+You don't have to move right now.
+
+Breathe in.
+<break time="4s"/>
+Hold. You're safe.
+<break time="4s"/>
+Let it out.
+<break time="6s"/>
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+You're still here. That's everything.

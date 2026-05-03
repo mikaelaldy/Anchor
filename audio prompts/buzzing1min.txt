@@ -1,0 +1,17 @@
+You're buzzing. That energy is real.
+
+Breathe in. Let it rise.
+<break time="4s"/>
+Hold. Contain it.
+<break time="4s"/>
+Exhale. Release what you don't need.
+<break time="6s"/>
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+Anchored.

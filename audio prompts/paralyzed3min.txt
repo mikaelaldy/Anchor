@@ -1,0 +1,57 @@
+You don't have to move right now. Seriously.
+
+Paralysis isn't laziness. Your brain is overloaded.
+We're just going to breathe until something loosens.
+
+In.
+<break time="4s"/>
+Hold. You're safe.
+<break time="4s"/>
+Let it out slowly.
+<break time="6s"/>
+
+Nothing is due in the next three minutes.
+This time is yours.
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+Frozen doesn't mean broken.
+It means you need a moment. Take it.
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+You don't need to figure anything out.
+Just breathe. That's the whole job.
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+Good. You're still here. That's everything.

@@ -1,0 +1,52 @@
+You're buzzing. That energy is real — we're not fighting it.
+We're giving it somewhere to land.
+
+In. Let it rise.
+<break time="4s"/>
+Hold. Contain it.
+<break time="4s"/>
+Out. Release what you don't need.
+<break time="6s"/>
+
+Your brain runs fast. That's a superpower.
+Right now we're just putting it in park. Briefly.
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+The buzz will still be there after this.
+But right now — just the breath.
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+Anchored.
