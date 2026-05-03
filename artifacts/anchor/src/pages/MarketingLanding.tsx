@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useAuth } from "@workspace/replit-auth-web";
 
@@ -40,6 +40,25 @@ export default function MarketingLanding({ active, onStart }: Props) {
 
   const sectionGap = isMobile ? 80 : 120;
   const px = isMobile ? 24 : 32;
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://storage.ko-fi.com/cdn/scripts/overlay-widget.js";
+    script.async = true;
+    script.onload = () => {
+      (window as any).kofiWidgetOverlay?.draw("mikascend", {
+        type: "floating-chat",
+        "floating-chat.donateButton.text": "Support Anchor",
+        "floating-chat.donateButton.background-color": "#000000",
+        "floating-chat.donateButton.text-color": "#ffffff",
+      });
+    };
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+      document.querySelector(".kofi-overlay")?.remove();
+    };
+  }, []);
 
   const scrollTo = (id: string) => {
     const el = containerRef.current?.querySelector<HTMLElement>(`#${id}`);
@@ -579,6 +598,152 @@ export default function MarketingLanding({ active, onStart }: Props) {
           </div>
         </section>
 
+        {/* KO-FI DONATION SECTION */}
+        <section style={{ marginBottom: sectionGap }}>
+          <div style={{
+            background: "var(--color-surface)",
+            borderRadius: "var(--radius-card)",
+            padding: isMobile ? 32 : 40,
+            boxShadow: "0 30px 60px rgba(0,0,0,0.04)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 24,
+          }}>
+            <div style={{ textAlign: "center" }}>
+              <p style={{
+                fontFamily: "var(--font)",
+                fontWeight: 700,
+                fontSize: 12,
+                letterSpacing: "0.15em",
+                textTransform: "uppercase",
+                color: "var(--color-muted)",
+                marginBottom: 10,
+              }}>
+                Support the project
+              </p>
+              <h3 style={{
+                fontFamily: "var(--font)",
+                fontWeight: 700,
+                fontSize: isMobile ? 24 : 28,
+                letterSpacing: "-0.01em",
+                color: "var(--color-text)",
+                marginBottom: 12,
+              }}>
+                Keep Anchor free for everyone
+              </h3>
+              <p style={{
+                fontFamily: "var(--font)",
+                fontSize: 15,
+                lineHeight: 1.6,
+                color: "var(--color-muted-mid)",
+                maxWidth: 400,
+                margin: "0 auto",
+              }}>
+                Anchor is free and open source. If it's helped you find a moment of calm, consider buying me a coffee.
+              </p>
+            </div>
+
+            {/* Ko-fi card */}
+            <a
+              href="https://ko-fi.com/mikascend"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+                padding: isMobile ? "24px 28px" : "28px 36px",
+                borderRadius: 24,
+                background: "var(--color-surface-low)",
+                border: "1px solid var(--color-surface-high)",
+                textDecoration: "none",
+                transition: "background 150ms, transform 150ms",
+                cursor: "pointer",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "var(--color-surface-mid)";
+                e.currentTarget.style.transform = "scale(1.01)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "var(--color-surface-low)";
+                e.currentTarget.style.transform = "scale(1)";
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                <div style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 14,
+                  background: "#FF5E5B",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                  fontSize: 24,
+                }}>
+                  ☕
+                </div>
+                <div>
+                  <p style={{
+                    fontFamily: "var(--font)",
+                    fontWeight: 700,
+                    fontSize: 15,
+                    color: "var(--color-text)",
+                    marginBottom: 3,
+                  }}>
+                    ko-fi.com/mikascend
+                  </p>
+                  <p style={{
+                    fontFamily: "var(--font)",
+                    fontSize: 13,
+                    color: "var(--color-muted)",
+                  }}>
+                    Buy me a coffee to keep Anchor free
+                  </p>
+                </div>
+              </div>
+              <span className="material-symbols-outlined" style={{ fontSize: 20, color: "var(--color-muted)", flexShrink: 0 }}>
+                open_in_new
+              </span>
+            </a>
+
+            <a
+              href="https://ko-fi.com/mikascend"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "14px 32px",
+                borderRadius: "var(--radius-pill)",
+                background: "var(--color-primary)",
+                color: "var(--color-on-primary)",
+                fontFamily: "var(--font)",
+                fontWeight: 700,
+                fontSize: 14,
+                letterSpacing: "0.08em",
+                textDecoration: "none",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.12)",
+                transition: "transform 150ms, box-shadow 150ms",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.03)";
+                e.currentTarget.style.boxShadow = "0 16px 40px rgba(0,0,0,0.18)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.boxShadow = "0 10px 30px rgba(0,0,0,0.12)";
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>favorite</span>
+              Support on Ko-fi
+            </a>
+          </div>
+        </section>
+
       </main>
 
       {/* FOOTER */}
@@ -663,7 +828,10 @@ export default function MarketingLanding({ active, onStart }: Props) {
             }}>
               © 2026 Anchor. Free, open, and for everyone.
             </p>
-            <button
+            <a
+              href="https://ko-fi.com/mikascend"
+              target="_blank"
+              rel="noopener noreferrer"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -676,15 +844,21 @@ export default function MarketingLanding({ active, onStart }: Props) {
                 fontSize: 14,
                 fontWeight: 500,
                 color: "var(--color-muted-mid)",
-                cursor: "pointer",
-                transition: "background 150ms",
+                textDecoration: "none",
+                transition: "background 150ms, color 150ms",
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "var(--color-surface-low)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "var(--color-surface-low)";
+                e.currentTarget.style.color = "var(--color-text)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.color = "var(--color-muted-mid)";
+              }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: 18 }}>favorite</span>
-              Donate to Project
-            </button>
+              Donate on Ko-fi
+            </a>
           </div>
         </div>
       </footer>
