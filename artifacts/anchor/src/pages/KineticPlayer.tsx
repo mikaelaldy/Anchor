@@ -302,8 +302,8 @@ export default function KineticPlayer({ active, mood, duration, onComplete, onBa
             onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.6"; }}
             onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
           >
-            <span className="material-symbols-outlined" style={{ fontSize: 20 }}>arrow_back</span>
-            Back
+            <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
+            End
           </button>
           <button
             onClick={() => setVoiceMuted(v => !v)}
