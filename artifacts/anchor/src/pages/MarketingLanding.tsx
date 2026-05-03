@@ -87,7 +87,6 @@ export default function MarketingLanding({ active, onStart, onDashboard }: Props
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          gap: 16,
           padding: isMobile ? "14px 24px" : "16px 32px",
         }}>
           <button
@@ -102,112 +101,100 @@ export default function MarketingLanding({ active, onStart, onDashboard }: Props
               border: "none",
               cursor: "pointer",
               padding: 0,
-              flexShrink: 0,
             }}
           >
             Anchor
           </button>
 
-          {/* One cluster on the right: links + GitHub + Start (avoids 3-way space-between gap) */}
-          <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 8 : 14, flexShrink: 0, marginLeft: "auto" }}>
-            {!isMobile && (
-              <>
-                {[
-                  { label: "Practice", id: "process" },
-                  { label: "Community", id: "features" },
-                ].map(({ label, id }) => (
-                  <button
-                    key={label}
-                    type="button"
-                    onClick={() => scrollTo(id)}
-                    style={{
-                      fontFamily: "var(--font)",
-                      fontWeight: 500,
-                      fontSize: 13,
-                      color: "var(--color-muted-mid)",
-                      background: "none",
-                      border: "none",
-                      cursor: "pointer",
-                      padding: "4px 0",
-                      whiteSpace: "nowrap",
-                      transition: "color 150ms",
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted-mid)"; }}
-                  >
-                    {label}
-                  </button>
-                ))}
+          {!isMobile && (
+            <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+              {[
+                { label: "Practice", id: "process" },
+                { label: "Community", id: "features" },
+              ].map(({ label, id }) => (
                 <button
-                  type="button"
-                  onClick={() => scrollTo("support")}
+                  key={label}
+                  onClick={() => scrollTo(id)}
                   style={{
                     fontFamily: "var(--font)",
                     fontWeight: 500,
-                    fontSize: 13,
-                    color: "var(--color-muted)",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 3,
-                    padding: "4px 0",
-                    whiteSpace: "nowrap",
-                    transition: "color 150ms",
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-muted-mid)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted)"; }}
-                >
-                  Support
-                  <span className="material-symbols-outlined" style={{ fontSize: 15 }}>favorite</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={onDashboard}
-                  style={{
-                    fontFamily: "var(--font)",
-                    fontWeight: 500,
-                    fontSize: 13,
+                    fontSize: 14,
                     color: "var(--color-muted-mid)",
                     background: "none",
                     border: "none",
                     cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 4,
                     padding: "4px 0",
-                    whiteSpace: "nowrap",
                     transition: "color 150ms",
                   }}
                   onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
                   onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted-mid)"; }}
                 >
-                  <span className="material-symbols-outlined" style={{ fontSize: 18 }}>insights</span>
-                  My journey
+                  {label}
                 </button>
-                <a
-                  href="https://github.com/mikaelaldy/Anchor"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="GitHub repository"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    color: "var(--color-muted-mid)",
-                    transition: "color 150ms",
-                    cursor: "pointer",
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted-mid)"; }}
-                >
-                  <GitHubIcon size={18} />
-                </a>
-              </>
-            )}
+              ))}
+              <button
+                style={{
+                  fontFamily: "var(--font)",
+                  fontWeight: 500,
+                  fontSize: 14,
+                  color: "var(--color-muted-mid)",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 4,
+                  transition: "color 150ms",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted-mid)"; }}
+              >
+                Support
+                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>favorite</span>
+              </button>
+              <button
+                onClick={onDashboard}
+                style={{
+                  fontFamily: "var(--font)",
+                  fontWeight: 500,
+                  fontSize: 14,
+                  color: "var(--color-muted-mid)",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 4,
+                  transition: "color 150ms",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted-mid)"; }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>insights</span>
+                My journey
+              </button>
+              <a
+                href="https://github.com/mikaelaldy/Anchor"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  color: "var(--color-muted-mid)",
+                  transition: "color 150ms",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted-mid)"; }}
+              >
+                <GitHubIcon size={18} />
+              </a>
+            </div>
+          )}
+
+          {/* Mobile: streak icon + start */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {isMobile && (
               <button
-                type="button"
                 onClick={onDashboard}
                 style={{
                   display: "flex",
@@ -225,28 +212,26 @@ export default function MarketingLanding({ active, onStart, onDashboard }: Props
                 <span className="material-symbols-outlined" style={{ fontSize: 20 }}>insights</span>
               </button>
             )}
-            <button
-              type="button"
-              onClick={onStart}
-              style={{
-                background: "var(--color-primary)",
-                color: "var(--color-on-primary)",
-                fontFamily: "var(--font)",
-                fontWeight: 700,
-                fontSize: 13,
-                letterSpacing: "0.04em",
-                padding: "9px 20px",
-                borderRadius: "var(--radius-pill)",
-                border: "none",
-                cursor: "pointer",
-                transition: "transform 150ms",
-                flexShrink: 0,
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(0.96)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
-            >
-              Start
-            </button>
+          <button
+            onClick={onStart}
+            style={{
+              background: "var(--color-primary)",
+              color: "var(--color-on-primary)",
+              fontFamily: "var(--font)",
+              fontWeight: 700,
+              fontSize: 13,
+              letterSpacing: "0.04em",
+              padding: "9px 20px",
+              borderRadius: "var(--radius-pill)",
+              border: "none",
+              cursor: "pointer",
+              transition: "transform 150ms",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(0.96)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
+          >
+            Start
+          </button>
           </div>
         </div>
       </nav>
@@ -658,18 +643,18 @@ export default function MarketingLanding({ active, onStart, onDashboard }: Props
         </section>
 
         {/* KO-FI DONATION SECTION */}
-        <section id="support" style={{ marginBottom: sectionGap }}>
+        <section style={{ marginBottom: sectionGap }}>
           <div style={{
             background: "var(--color-surface)",
-            borderRadius: "var(--radius-card-sm)",
-            padding: isMobile ? 20 : 24,
-            border: "1px solid var(--color-surface-high)",
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "1fr auto",
+            borderRadius: "var(--radius-card)",
+            padding: isMobile ? 32 : 40,
+            boxShadow: "0 30px 60px rgba(0,0,0,0.04)",
+            display: "flex",
+            flexDirection: "column",
             alignItems: "center",
-            gap: isMobile ? 16 : 24,
+            gap: 24,
           }}>
-            <div style={{ textAlign: isMobile ? "center" : "left" }}>
+            <div style={{ textAlign: "center" }}>
               <p style={{
                 fontFamily: "var(--font)",
                 fontWeight: 700,
@@ -681,17 +666,92 @@ export default function MarketingLanding({ active, onStart, onDashboard }: Props
               }}>
                 Support the project
               </p>
+              <h3 style={{
+                fontFamily: "var(--font)",
+                fontWeight: 700,
+                fontSize: isMobile ? 24 : 28,
+                letterSpacing: "-0.01em",
+                color: "var(--color-text)",
+                marginBottom: 12,
+              }}>
+                Keep Anchor free for everyone
+              </h3>
               <p style={{
                 fontFamily: "var(--font)",
-                fontSize: 14,
+                fontSize: 15,
                 lineHeight: 1.6,
                 color: "var(--color-muted-mid)",
-                maxWidth: 460,
-                margin: 0,
+                maxWidth: 400,
+                margin: "0 auto",
               }}>
-                Anchor is free and open source. If it helps, a small contribution keeps it available for everyone.
+                Anchor is free and open source. If it's helped you find a moment of calm, consider buying me a coffee.
               </p>
             </div>
+
+            {/* Ko-fi card */}
+            <a
+              href="https://ko-fi.com/mikascend"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+                padding: isMobile ? "24px 28px" : "28px 36px",
+                borderRadius: 24,
+                background: "var(--color-surface-low)",
+                border: "1px solid var(--color-surface-high)",
+                textDecoration: "none",
+                transition: "background 150ms, transform 150ms",
+                cursor: "pointer",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "var(--color-surface-mid)";
+                e.currentTarget.style.transform = "scale(1.01)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "var(--color-surface-low)";
+                e.currentTarget.style.transform = "scale(1)";
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                <div style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 14,
+                  background: "#FF5E5B",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                  fontSize: 24,
+                }}>
+                  ☕
+                </div>
+                <div>
+                  <p style={{
+                    fontFamily: "var(--font)",
+                    fontWeight: 700,
+                    fontSize: 15,
+                    color: "var(--color-text)",
+                    marginBottom: 3,
+                  }}>
+                    ko-fi.com/mikascend
+                  </p>
+                  <p style={{
+                    fontFamily: "var(--font)",
+                    fontSize: 13,
+                    color: "var(--color-muted)",
+                  }}>
+                    Buy me a coffee to keep Anchor free
+                  </p>
+                </div>
+              </div>
+              <span className="material-symbols-outlined" style={{ fontSize: 20, color: "var(--color-muted)", flexShrink: 0 }}>
+                open_in_new
+              </span>
+            </a>
 
             <a
               href="https://ko-fi.com/mikascend"
@@ -700,33 +760,30 @@ export default function MarketingLanding({ active, onStart, onDashboard }: Props
               style={{
                 display: "inline-flex",
                 alignItems: "center",
-                justifyContent: "center",
                 gap: 8,
-                padding: "10px 18px",
+                padding: "14px 32px",
                 borderRadius: "var(--radius-pill)",
-                background: "transparent",
-                border: "1px solid var(--color-surface-high)",
-                color: "var(--color-muted-mid)",
+                background: "var(--color-primary)",
+                color: "var(--color-on-primary)",
                 fontFamily: "var(--font)",
-                fontWeight: 600,
-                fontSize: 13,
+                fontWeight: 700,
+                fontSize: 14,
+                letterSpacing: "0.08em",
                 textDecoration: "none",
-                transition: "background 150ms, color 150ms, border-color 150ms",
-                cursor: "pointer",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.12)",
+                transition: "transform 150ms, box-shadow 150ms",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = "var(--color-surface-low)";
-                e.currentTarget.style.borderColor = "var(--color-outline-variant)";
-                e.currentTarget.style.color = "var(--color-text)";
+                e.currentTarget.style.transform = "scale(1.03)";
+                e.currentTarget.style.boxShadow = "0 16px 40px rgba(0,0,0,0.18)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = "transparent";
-                e.currentTarget.style.borderColor = "var(--color-surface-high)";
-                e.currentTarget.style.color = "var(--color-muted-mid)";
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.boxShadow = "0 10px 30px rgba(0,0,0,0.12)";
               }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: 17 }}>favorite</span>
-              Support Anchor
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>favorite</span>
+              Support on Ko-fi
             </a>
           </div>
         </section>

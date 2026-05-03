@@ -3,172 +3,166 @@ import { motion } from 'framer-motion';
 
 export function Scene1() {
   const [phase, setPhase] = useState(0);
-  const [cursorOn, setCursorOn] = useState(true);
 
   useEffect(() => {
-    const blink = setInterval(() => setCursorOn(c => !c), 520);
     const timers = [
-      setTimeout(() => setPhase(1), 300),   // line 1 types in
-      setTimeout(() => setPhase(2), 2200),  // line 2 types in
-      setTimeout(() => setPhase(3), 4400),  // ANCHOR reveals
-      setTimeout(() => setPhase(4), 5800),  // tagline fades
+      setTimeout(() => setPhase(1), 100),
+      setTimeout(() => setPhase(2), 600),
+      setTimeout(() => setPhase(3), 1800),
+      setTimeout(() => setPhase(4), 3200),
     ];
-    return () => {
-      clearInterval(blink);
-      timers.forEach(t => clearTimeout(t));
-    };
+    return () => timers.forEach(t => clearTimeout(t));
   }, []);
+
+  const chars = 'ANCHOR'.split('');
 
   return (
     <motion.div
-      className="absolute inset-0 flex flex-col justify-center"
-      style={{
-        background: 'linear-gradient(145deg, #1a1917 0%, #1e1d1c 55%, #161514 100%)',
-        paddingLeft: '10vw',
-        paddingRight: '10vw',
-      }}
+      className="absolute inset-0 flex items-center justify-center"
+      style={{ background: 'linear-gradient(145deg, #1a1917 0%, #222120 55%, #1c1b1b 100%)' }}
       initial={{ opacity: 1 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, scale: 1.02 }}
-      transition={{ duration: 0.6 }}
+      exit={{ opacity: 0, scale: 1.03 }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
-      {/* Green atmospheric glow — bottom-left */}
+      {/* Ambient green glow — bottom left */}
       <motion.div
         className="absolute rounded-full"
         style={{
-          width: '55vw', height: '55vw',
-          background: 'radial-gradient(circle, rgba(62,103,75,0.13) 0%, transparent 70%)',
-          bottom: '-20%', left: '-12%',
+          width: '45vw', height: '45vw',
+          background: 'radial-gradient(circle, rgba(62,103,75,0.14) 0%, transparent 70%)',
+          bottom: '-10%', left: '-8%',
           pointerEvents: 'none',
         }}
-        animate={{ scale: [1, 1.07, 1] }}
-        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+        animate={{ scale: [1, 1.08, 1], opacity: [0.7, 1, 0.7] }}
+        transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
       />
 
-      {/* Warm mist — top right */}
+      {/* Ambient warm glow — top right */}
       <motion.div
         className="absolute rounded-full"
         style={{
           width: '30vw', height: '30vw',
-          background: 'radial-gradient(circle, rgba(253,248,248,0.03) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(253,248,248,0.04) 0%, transparent 70%)',
           top: '5%', right: '5%',
           pointerEvents: 'none',
         }}
-        animate={{ scale: [1, 1.12, 1], x: [0, 12, 0] }}
-        transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }}
+        animate={{ scale: [1, 1.12, 1], x: [0, 10, 0], y: [0, -8, 0] }}
+        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
       />
 
-      {/* Line 1 — personal opening */}
-      <div style={{ marginBottom: '1.8vh', minHeight: '1.4em' }}>
-        <motion.span
-          style={{
-            fontFamily: 'Manrope, sans-serif',
-            fontWeight: 300,
-            fontSize: 'clamp(1.1rem, 2.6vw, 2.1rem)',
-            color: 'rgba(253,248,248,0.72)',
-            letterSpacing: '-0.005em',
-            fontStyle: 'italic',
-          }}
-          initial={{ opacity: 0, y: 14 }}
-          animate={phase >= 1 ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-        >
-          I couldn't stop thinking.
-          {phase === 1 && (
-            <span style={{
-              display: 'inline-block',
-              width: '2px', height: '1.05em',
-              background: 'rgba(62,103,75,0.85)',
-              marginLeft: '3px',
-              verticalAlign: 'text-bottom',
-              opacity: cursorOn ? 1 : 0,
-              transition: 'opacity 0.05s',
-            }} />
-          )}
-        </motion.span>
-      </div>
-
-      {/* Line 2 */}
-      <div style={{ marginBottom: '6vh', minHeight: '1.4em' }}>
-        <motion.span
-          style={{
-            fontFamily: 'Manrope, sans-serif',
-            fontWeight: 300,
-            fontSize: 'clamp(1.1rem, 2.6vw, 2.1rem)',
-            color: 'rgba(253,248,248,0.4)',
-            letterSpacing: '-0.005em',
-            fontStyle: 'italic',
-          }}
-          initial={{ opacity: 0, y: 14 }}
-          animate={phase >= 2 ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-        >
-          So I built something.
-          {phase === 2 && (
-            <span style={{
-              display: 'inline-block',
-              width: '2px', height: '1.05em',
-              background: 'rgba(62,103,75,0.75)',
-              marginLeft: '3px',
-              verticalAlign: 'text-bottom',
-              opacity: cursorOn ? 1 : 0,
-              transition: 'opacity 0.05s',
-            }} />
-          )}
-        </motion.span>
-      </div>
-
-      {/* ANCHOR wordmark */}
+      {/* Outer SVG ring — traces in */}
       <motion.div
-        initial={{ opacity: 0, y: 22 }}
-        animate={phase >= 3 ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 }}
-        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+        className="absolute"
+        style={{ width: '30vmin', height: '30vmin', pointerEvents: 'none' }}
       >
-        <span style={{
-          fontFamily: 'Manrope, sans-serif',
-          fontWeight: 800,
-          fontSize: 'clamp(3.2rem, 10vw, 8.5rem)',
-          color: '#fdf8f8',
-          letterSpacing: '-0.03em',
-          lineHeight: 1,
-          display: 'block',
-        }}>
-          ANCHOR
-        </span>
+        <svg width="100%" height="100%" viewBox="0 0 200 200">
+          <motion.circle
+            cx="100" cy="100" r="92"
+            fill="none"
+            stroke="rgba(253,248,248,0.08)"
+            strokeWidth="0.8"
+            pathLength={1}
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: phase >= 1 ? 1 : 0 }}
+            transition={{ duration: 2.5, ease: [0.16, 1, 0.3, 1] }}
+          />
+          <motion.circle
+            cx="100" cy="100" r="92"
+            fill="none"
+            stroke="rgba(62,103,75,0.45)"
+            strokeWidth="0.6"
+            strokeDasharray="30 200"
+            initial={{ rotate: -90 }}
+            animate={{ rotate: 270 }}
+            style={{ transformOrigin: '100px 100px' }}
+            transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+          />
+        </svg>
       </motion.div>
 
-      {/* Tagline */}
-      <motion.p
-        style={{
-          fontFamily: 'Manrope, sans-serif',
-          fontWeight: 400,
-          fontSize: 'clamp(0.55rem, 1.1vw, 0.82rem)',
-          letterSpacing: '0.26em',
-          textTransform: 'uppercase',
-          color: 'rgba(253,248,248,0.3)',
-          marginTop: '2.2vh',
-        }}
-        initial={{ opacity: 0 }}
-        animate={phase >= 4 ? { opacity: 1 } : { opacity: 0 }}
-        transition={{ duration: 1.2 }}
-      >
-        A meditation app for every mind
-      </motion.p>
+      {/* Inner node */}
+      <motion.div
+        className="absolute rounded-full"
+        style={{ width: '6vmin', height: '6vmin', background: '#fdf8f8' }}
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: phase >= 1 ? 1 : 0, opacity: phase >= 1 ? 0.9 : 0 }}
+        transition={{ type: 'spring', stiffness: 320, damping: 22, delay: 0.2 }}
+      />
 
-      {/* Floating ambient dots */}
-      {[0, 1, 2, 3, 4].map(i => (
+      {/* ANCHOR letters */}
+      <div className="relative z-10 text-center" style={{ perspective: '1200px' }}>
+        <div className="flex items-center justify-center">
+          {chars.map((char, i) => (
+            <motion.span
+              key={i}
+              style={{
+                display: 'inline-block',
+                fontSize: 'clamp(2.8rem, 9vw, 7.5rem)',
+                fontFamily: 'Manrope, sans-serif',
+                fontWeight: 800,
+                letterSpacing: '-0.01em',
+                color: '#fdf8f8',
+                lineHeight: 1,
+              }}
+              initial={{ opacity: 0, y: 50, rotateX: -50 }}
+              animate={phase >= 2 ? { opacity: 1, y: 0, rotateX: 0 } : { opacity: 0, y: 50, rotateX: -50 }}
+              transition={{
+                type: 'spring', stiffness: 340, damping: 26,
+                delay: phase >= 2 ? i * 0.07 : 0,
+              }}
+            >
+              {char}
+            </motion.span>
+          ))}
+        </div>
+
+        {/* Tagline */}
+        <motion.p
+          style={{
+            fontFamily: 'Manrope, sans-serif',
+            fontWeight: 400,
+            fontSize: 'clamp(0.6rem, 1.4vw, 1rem)',
+            letterSpacing: '0.28em',
+            textTransform: 'uppercase',
+            color: 'rgba(253,248,248,0.4)',
+            marginTop: '1.8vh',
+          }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={phase >= 3 ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+        >
+          A visual deep breath
+        </motion.p>
+      </div>
+
+      {/* Bottom accent line */}
+      <motion.div
+        className="absolute"
+        style={{
+          bottom: '12%', left: '50%', height: '1px',
+          width: '18vw',
+          background: 'rgba(253,248,248,0.12)',
+          transformOrigin: 'left center',
+        }}
+        initial={{ scaleX: 0, x: '-50%' }}
+        animate={phase >= 3 ? { scaleX: 1, x: '-50%' } : { scaleX: 0, x: '-50%' }}
+        transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+      />
+
+      {/* Floating micro dots */}
+      {[0, 1, 2, 3].map(i => (
         <motion.div
           key={i}
           className="absolute rounded-full"
           style={{
-            width: `${2 + (i % 3)}px`,
-            height: `${2 + (i % 3)}px`,
-            background: 'rgba(62,103,75,0.45)',
-            right: `${12 + i * 7}%`,
-            top: `${22 + (i % 3) * 18}%`,
+            width: `${3 + i}px`, height: `${3 + i}px`,
+            background: 'rgba(62,103,75,0.5)',
+            left: `${20 + i * 18}%`,
+            top: `${70 + (i % 2) * 12}%`,
           }}
-          animate={{ y: [0, -9, 0], opacity: [0.2, 0.55, 0.2] }}
-          transition={{ duration: 3.2 + i * 0.7, repeat: Infinity, ease: 'easeInOut', delay: i * 0.45 }}
+          animate={{ y: [0, -10, 0], opacity: [0.3, 0.7, 0.3] }}
+          transition={{ duration: 3 + i * 0.7, repeat: Infinity, ease: 'easeInOut', delay: i * 0.5 }}
         />
       ))}
     </motion.div>
