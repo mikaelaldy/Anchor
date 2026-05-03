@@ -24,13 +24,13 @@ const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
   close:   Scene5,
 };
 
-// Persistent green orb — morphs position per scene
+// Persistent green orb — drifts to a new position each scene
 const ORB_POS = [
-  { x: '2vw',  y: '52vh', scale: 2.6, opacity: 0.20 },   // open
-  { x: '62vw', y: '2vh',  scale: 1.7, opacity: 0.13 },   // mind
-  { x: '28vw', y: '26vh', scale: 3.4, opacity: 0.22 },   // breath
-  { x: '52vw', y: '55vh', scale: 1.4, opacity: 0.10 },   // journey
-  { x: '-6vw', y: '14vh', scale: 3.0, opacity: 0.16 },   // close
+  { x: '2vw',  y: '52vh', scale: 2.6, opacity: 0.20 },  // open
+  { x: '62vw', y: '2vh',  scale: 1.7, opacity: 0.13 },  // mind
+  { x: '28vw', y: '26vh', scale: 3.4, opacity: 0.22 },  // breath
+  { x: '52vw', y: '55vh', scale: 1.4, opacity: 0.10 },  // journey
+  { x: '-6vw', y: '14vh', scale: 3.0, opacity: 0.16 },  // close
 ];
 
 export default function VideoTemplate({
@@ -42,7 +42,7 @@ export default function VideoTemplate({
   loop?: boolean;
   onSceneChange?: (sceneKey: string) => void;
 } = {}) {
-  const { currentScene, currentSceneKey } = useVideoPlayer({ durations, loop });
+  const { currentSceneKey } = useVideoPlayer({ durations, loop });
 
   useEffect(() => {
     onSceneChange?.(currentSceneKey);
@@ -56,10 +56,10 @@ export default function VideoTemplate({
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
-      {/* Audio: ambient pad + per-scene narration + breath sound */}
+      {/* Audio manager — ambient pad + per-scene narration + breath sound */}
       <AudioManager sceneKey={currentSceneKey} />
 
-      {/* Persistent drifting green orb */}
+      {/* Persistent green orb that morphs position between scenes */}
       <motion.div
         className="absolute rounded-full"
         style={{
@@ -71,7 +71,7 @@ export default function VideoTemplate({
         transition={{ duration: 1.7, ease: [0.16, 1, 0.3, 1] }}
       />
 
-      {/* Persistent warm mist orb */}
+      {/* Warm mist orb — slow ambient drift */}
       <motion.div
         className="absolute rounded-full"
         style={{
@@ -83,7 +83,7 @@ export default function VideoTemplate({
         transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
       />
 
-      {/* Scene transitions */}
+      {/* Scenes */}
       <AnimatePresence initial={false} mode="popLayout">
         {SceneComponent && <SceneComponent key={currentSceneKey} />}
       </AnimatePresence>

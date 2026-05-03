@@ -10,14 +10,13 @@ const NARRATION: Record<string, string> = {
   close:   `${BASE}audio/n5.mp3`,
 };
 
-// A minor ambient pad: sine oscillators on A2, E3, A3, C4, E4
+// A minor ambient pad: sine oscillators on A2 E3 A3 C4 E4
 function makeAmbientPad(ctx: AudioContext): () => void {
   const master = ctx.createGain();
   master.gain.setValueAtTime(0, ctx.currentTime);
   master.gain.linearRampToValueAtTime(0.048, ctx.currentTime + 5);
   master.connect(ctx.destination);
 
-  // Very slow tremolo LFO (~8 s cycle)
   const lfo = ctx.createOscillator();
   const lfoGain = ctx.createGain();
   lfo.frequency.value = 0.12;
@@ -49,13 +48,13 @@ function makeAmbientPad(ctx: AudioContext): () => void {
     master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
     master.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.6);
     setTimeout(() => {
-      oscs.forEach(o => { try { o.stop(); } catch { /* noop */ } });
-      try { lfo.stop(); } catch { /* noop */ }
+      oscs.forEach(o => { try { o.stop(); } catch { /**/ } });
+      try { lfo.stop(); } catch { /**/ }
     }, 1700);
   };
 }
 
-// Pink noise filtered for soft breath sound (4s inhale / 2s hold / 4s exhale / 2s rest)
+// Breath-synced pink noise
 function makeBreathSound(ctx: AudioContext): () => void {
   const sr = ctx.sampleRate;
   const buf = ctx.createBuffer(1, sr * 4, sr);
@@ -69,61 +68,80 @@ function makeBreathSound(ctx: AudioContext): () => void {
     d[i] = (b0+b1+b2+b3+b4+b5+b6+w*0.5362)*0.11;
     b6=w*0.115926;
   }
-
   const src = ctx.createBufferSource();
   src.buffer = buf; src.loop = true;
-
   const filt = ctx.createBiquadFilter();
   filt.type = 'lowpass'; filt.frequency.value = 1100; filt.Q.value = 0.7;
-
   const gain = ctx.createGain();
   gain.gain.value = 0;
-
   src.connect(filt); filt.connect(gain); gain.connect(ctx.destination);
   src.start();
-
   let active = true;
   const runCycle = () => {
     if (!active) return;
     const t = ctx.currentTime;
-    gain.gain.linearRampToValueAtTime(0.085, t + 4);       // inhale
-    gain.gain.setValueAtTime(0.085, t + 6);                // hold
-    gain.gain.linearRampToValueAtTime(0, t + 10);          // exhale
+    gain.gain.linearRampToValueAtTime(0.085, t + 4);
+    gain.gain.setValueAtTime(0.085, t + 6);
+    gain.gain.linearRampToValueAtTime(0, t + 10);
     setTimeout(() => runCycle(), 12000);
   };
   runCycle();
-
   return () => {
     active = false;
     gain.gain.setValueAtTime(gain.gain.value, ctx.currentTime);
     gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.6);
-    setTimeout(() => { try { src.stop(); } catch { /* noop */ } }, 700);
+    setTimeout(() => { try { src.stop(); } catch { /**/ } }, 700);
   };
 }
 
-export function AudioManager({ sceneKey }: { sceneKey: string }) {
+export function AudioManager({ sceneKey, onUnlocked }: { sceneKey: string; onUnlocked?: () => void }) {
   const ctxRef = useRef<AudioContext | null>(null);
   const stopAmbientRef = useRef<(() => void) | null>(null);
   const stopBreathRef = useRef<(() => void) | null>(null);
   const narrationRef = useRef<HTMLAudioElement | null>(null);
+  const unlockedRef = useRef(false);
+  const currentNarSrcRef = useRef<string | null>(null);
 
-  // Ambient pad — persists for the life of the video
+  // Create AudioContext on mount
   useEffect(() => {
     let ctx: AudioContext;
     try {
       ctx = new AudioContext();
       ctxRef.current = ctx;
-      stopAmbientRef.current = makeAmbientPad(ctx);
-    } catch { /* AudioContext blocked */ }
+    } catch { return; }
+
+    // ── CRITICAL: unlock audio synchronously inside a real DOM event ──
+    // React effects run outside the browser's user-activation window,
+    // so we attach a raw DOM listener that calls resume() + play() inline.
+    const unlock = () => {
+      if (unlockedRef.current) return;
+      unlockedRef.current = true;
+      ctx.resume().then(() => {
+        // Replay the current narration if it was blocked
+        if (narrationRef.current) {
+          narrationRef.current.currentTime = 0;
+          narrationRef.current.play().catch(() => { /**/ });
+        }
+        // Start ambient pad now that context is running
+        stopAmbientRef.current = makeAmbientPad(ctx);
+        onUnlocked?.();
+      });
+    };
+
+    document.addEventListener('pointerdown', unlock, { once: true });
+    document.addEventListener('click',       unlock, { once: true });
 
     return () => {
+      document.removeEventListener('pointerdown', unlock);
+      document.removeEventListener('click',       unlock);
       stopAmbientRef.current?.();
-      ctxRef.current?.close().catch(() => {});
+      stopBreathRef.current?.();
+      ctx.close().catch(() => { /**/ });
       ctxRef.current = null;
     };
   }, []);
 
-  // Per-scene: narration + breathing sound
+  // Per-scene: narration + breath sound
   useEffect(() => {
     const base = sceneKey.replace(/_r[12]$/, '');
 
@@ -136,31 +154,30 @@ export function AudioManager({ sceneKey }: { sceneKey: string }) {
     stopBreathRef.current?.();
     stopBreathRef.current = null;
 
-    // Resume audio context (needed after autoplay block)
-    ctxRef.current?.resume().catch(() => {});
+    const src = NARRATION[base] ?? null;
+    currentNarSrcRef.current = src;
 
-    // Play narration with a short delay to let the scene animate in first
-    const src = NARRATION[base];
-    let audio: HTMLAudioElement | null = null;
-    let timer: ReturnType<typeof setTimeout> | null = null;
     if (src) {
-      audio = new Audio(src);
+      const audio = new Audio(src);
       audio.volume = 0.88;
       narrationRef.current = audio;
-      timer = setTimeout(() => {
-        audio?.play().catch(() => { /* autoplay blocked — ok */ });
-      }, 650);
+
+      // Only play if already unlocked — otherwise the unlock handler will play it
+      if (unlockedRef.current) {
+        const timer = setTimeout(() => {
+          audio.play().catch(() => { /**/ });
+        }, 600);
+        return () => {
+          clearTimeout(timer);
+          audio.pause();
+        };
+      }
     }
 
-    // Add breathing sound layer during the breath scene
-    if (base === 'breath' && ctxRef.current) {
+    // Breath sound (only when context already unlocked)
+    if (base === 'breath' && ctxRef.current && unlockedRef.current) {
       stopBreathRef.current = makeBreathSound(ctxRef.current);
     }
-
-    return () => {
-      if (timer) clearTimeout(timer);
-      audio?.pause();
-    };
   }, [sceneKey]);
 
   return null;

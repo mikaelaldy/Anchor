@@ -19,26 +19,17 @@ interface ControlBarProps {
 }
 
 function ProgressSegments({
-  sceneKeys,
-  activeIndex,
-  activeDuration,
-  tick,
-  onJumpTo,
+  sceneKeys, activeIndex, activeDuration, tick, onJumpTo,
 }: {
-  sceneKeys: string[];
-  activeIndex: number;
-  activeDuration: number;
-  tick: number;
-  onJumpTo: (index: number) => void;
+  sceneKeys: string[]; activeIndex: number; activeDuration: number;
+  tick: number; onJumpTo: (index: number) => void;
 }) {
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
     setElapsed(0);
     const start = performance.now();
-    const id = window.setInterval(() => {
-      setElapsed(performance.now() - start);
-    }, PROGRESS_TICK_MS);
+    const id = window.setInterval(() => setElapsed(performance.now() - start), PROGRESS_TICK_MS);
     return () => window.clearInterval(id);
   }, [tick]);
 
@@ -48,7 +39,6 @@ function ProgressSegments({
     <div className="flex-1 flex items-center gap-1.5">
       {sceneKeys.map((key, i) => {
         const isActive = i === activeIndex;
-        const fill = isActive ? progress * 100 : 0;
         return (
           <button
             key={key}
@@ -59,7 +49,7 @@ function ProgressSegments({
           >
             <div
               className="absolute inset-y-0 left-0 bg-white/90 rounded-full transition-[width] duration-100"
-              style={{ width: `${fill}%` }}
+              style={{ width: `${isActive ? progress * 100 : 0}%` }}
             />
           </button>
         );
@@ -69,32 +59,20 @@ function ProgressSegments({
 }
 
 function ControlBar({
-  visible,
-  collapsed,
-  locked,
-  sceneKeys,
-  activeIndex,
-  activeDuration,
-  tick,
-  onToggleLock,
-  onJumpTo,
-  onToggleCollapsed,
+  visible, collapsed, locked, sceneKeys, activeIndex, activeDuration,
+  tick, onToggleLock, onJumpTo, onToggleCollapsed,
 }: ControlBarProps) {
   return (
     <div
       className={`flex items-center gap-3 bg-black/50 backdrop-blur-sm px-5 py-4 transition-all duration-200 ease-out ${
-        visible
-          ? 'translate-y-0 opacity-100 pointer-events-auto'
-          : 'translate-y-full opacity-0 pointer-events-none'
+        visible ? 'translate-y-0 opacity-100 pointer-events-auto' : 'translate-y-full opacity-0 pointer-events-none'
       }`}
       aria-hidden={!visible}
     >
       <button
         onClick={onToggleLock}
         className={`w-14 h-14 flex items-center justify-center transition-colors rounded-lg shrink-0 ${
-          locked
-            ? 'text-white bg-white/15 hover:bg-white/25'
-            : 'text-white/60 hover:text-white hover:bg-white/10'
+          locked ? 'text-white bg-white/15 hover:bg-white/25' : 'text-white/60 hover:text-white hover:bg-white/10'
         }`}
         title={locked ? 'Loop current scene: on' : 'Loop current scene: off'}
         aria-label={locked ? 'Loop current scene: on' : 'Loop current scene: off'}
@@ -106,11 +84,8 @@ function ControlBar({
       <div className="w-px self-stretch bg-white/15" aria-hidden="true" />
 
       <ProgressSegments
-        sceneKeys={sceneKeys}
-        activeIndex={activeIndex}
-        activeDuration={activeDuration}
-        tick={tick}
-        onJumpTo={onJumpTo}
+        sceneKeys={sceneKeys} activeIndex={activeIndex}
+        activeDuration={activeDuration} tick={tick} onJumpTo={onJumpTo}
       />
 
       <div className="text-xl text-white/60 font-mono tabular-nums shrink-0">
@@ -142,6 +117,10 @@ export default function VideoWithControls() {
   const [collapsed, setCollapsed] = useState(false);
   const [hovering, setHovering] = useState(false);
   const [tapPinned, setTapPinned] = useState(false);
+
+  // Audio unlock state — the AudioManager listens for the click event on document
+  // so just clicking this button is enough to unblock the AudioContext
+  const [audioUnlocked, setAudioUnlocked] = useState(false);
 
   const handlePointerEnter = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (e.pointerType === 'mouse') setHovering(true);
@@ -183,6 +162,46 @@ export default function VideoWithControls() {
         loop
         onSceneChange={onSceneChange}
       />
+
+      {/* ── Audio unlock prompt ── */}
+      {/* Clicking this is a real user gesture — AudioManager's document listener
+          fires synchronously and resumes the AudioContext + plays narration. */}
+      {!audioUnlocked && (
+        <button
+          onClick={() => setAudioUnlocked(true)}
+          style={{
+            position: 'absolute', top: '5%', left: '50%', transform: 'translateX(-50%)',
+            zIndex: 60,
+            display: 'flex', alignItems: 'center', gap: '0.5rem',
+            background: 'rgba(0,0,0,0.55)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            backdropFilter: 'blur(8px)',
+            borderRadius: '9999px',
+            padding: '0.6rem 1.4rem',
+            cursor: 'pointer',
+            fontFamily: 'Manrope, sans-serif',
+            fontWeight: 500,
+            fontSize: '0.78rem',
+            letterSpacing: '0.08em',
+            color: 'rgba(255,255,255,0.85)',
+            transition: 'background 0.2s',
+            animation: 'pulse-soft 2.5s ease-in-out infinite',
+          }}
+          aria-label="Enable audio"
+        >
+          <span style={{ fontSize: '1rem' }}>♪</span>
+          Tap for sound
+        </button>
+      )}
+
+      <style>{`
+        @keyframes pulse-soft {
+          0%, 100% { opacity: 0.9; transform: translateX(-50%) scale(1); }
+          50%       { opacity: 1;   transform: translateX(-50%) scale(1.03); }
+        }
+      `}</style>
+
+      {/* Scene-jump + collapse sensor */}
       <div
         ref={sensorRef}
         className="absolute bottom-0 left-0 right-0 z-50 flex flex-col justify-end"
