@@ -2,6 +2,14 @@ import { useRef } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useAuth } from "@workspace/replit-auth-web";
 
+function GitHubIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-label="GitHub">
+      <path d="M12 0C5.37 0 0 5.37 0 12c0 5.302 3.438 9.8 8.207 11.387.6.113.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.63-5.37-12-12-12z" />
+    </svg>
+  );
+}
+
 interface Props {
   active: boolean;
   onStart: () => void;
@@ -124,6 +132,21 @@ export default function MarketingLanding({ active, onStart }: Props) {
                 Support
                 <span className="material-symbols-outlined" style={{ fontSize: 16 }}>favorite</span>
               </button>
+              <a
+                href="https://github.com/mikaelaldy/Anchor"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  color: "var(--color-muted-mid)",
+                  transition: "color 150ms",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted-mid)"; }}
+              >
+                <GitHubIcon size={18} />
+              </a>
             </div>
           )}
 
@@ -573,8 +596,8 @@ export default function MarketingLanding({ active, onStart }: Props) {
           gap: 24,
           textAlign: "center",
         }}>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 24 }}>
-            {["Privacy", "Terms", "Support Anchor", "Open Source"].map((label) => (
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "center", gap: 24 }}>
+            {["Privacy", "Terms", "Support Anchor"].map((label) => (
               <a
                 key={label}
                 href="#"
@@ -595,6 +618,29 @@ export default function MarketingLanding({ active, onStart }: Props) {
                 {label}
               </a>
             ))}
+            <a
+              href="https://github.com/mikaelaldy/Anchor"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                fontFamily: "var(--font)",
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: "0.15em",
+                textTransform: "uppercase",
+                color: "var(--color-muted)",
+                textDecoration: "none",
+                transition: "color 150ms",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-text)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted)"; }}
+            >
+              <GitHubIcon size={14} />
+              Open Source
+            </a>
           </div>
 
           <div style={{
@@ -615,7 +661,7 @@ export default function MarketingLanding({ active, onStart }: Props) {
               color: "var(--color-muted)",
               opacity: 0.8,
             }}>
-              © 2025 Anchor. Free, open, and for everyone.
+              © 2026 Anchor. Free, open, and for everyone.
             </p>
             <button
               style={{
