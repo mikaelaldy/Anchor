@@ -1,0 +1,247 @@
+Scripts for ElevenLabs
+Paste each separately. Label them clearly when saving.
+
+File: scattered-1min.txt
+Hey. You made it here.
+
+Breathe in slowly.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Let it go.
+<break time="6s"/>
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+That's it. You're anchored.
+
+File: scattered-3min.txt
+Hey. You made it here. That's enough for now.
+
+Your mind is doing a lot. That's okay.
+We're not trying to stop it. Just slow it down.
+
+Breathe in slowly.
+<break time="4s"/>
+Hold it gently.
+<break time="4s"/>
+And let it go.
+<break time="6s"/>
+
+Again.
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+No tasks. No tabs. Just this breath.
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+Your scattered pieces don't need collecting right now.
+Just be here.
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+You're doing it.
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+That's it. You're anchored.
+
+File: paralyzed-1min.txt
+You don't have to move right now.
+
+Breathe in.
+<break time="4s"/>
+Hold. You're safe.
+<break time="4s"/>
+Let it out.
+<break time="6s"/>
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+You're still here. That's everything.
+
+File: paralyzed-3min.txt
+You don't have to move right now. Seriously.
+
+Paralysis isn't laziness. Your brain is overloaded.
+We're just going to breathe until something loosens.
+
+In.
+<break time="4s"/>
+Hold. You're safe.
+<break time="4s"/>
+Let it out slowly.
+<break time="6s"/>
+
+Nothing is due in the next three minutes.
+This time is yours.
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+Frozen doesn't mean broken.
+It means you need a moment. Take it.
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+You don't need to figure anything out.
+Just breathe. That's the whole job.
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+Good. You're still here. That's everything.
+
+File: buzzing-1min.txt
+You're buzzing. That energy is real.
+
+Breathe in. Let it rise.
+<break time="4s"/>
+Hold. Contain it.
+<break time="4s"/>
+Exhale. Release what you don't need.
+<break time="6s"/>
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+Anchored.
+
+File: buzzing-3min.txt
+You're buzzing. That energy is real — we're not fighting it.
+We're giving it somewhere to land.
+
+In. Let it rise.
+<break time="4s"/>
+Hold. Contain it.
+<break time="4s"/>
+Out. Release what you don't need.
+<break time="6s"/>
+
+Your brain runs fast. That's a superpower.
+Right now we're just putting it in park. Briefly.
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+The buzz will still be there after this.
+But right now — just the breath.
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+In.
+<break time="4s"/>
+Hold.
+<break time="4s"/>
+Out.
+<break time="6s"/>
+
+Anchored.
+
+ElevenLabs Settings
+For every file:
+
+Voice: River
+Stability: 72
+Similarity: 55
+Style: 0
+Speed: 0.82

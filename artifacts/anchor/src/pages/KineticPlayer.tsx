@@ -33,6 +33,18 @@ function getPhase(elapsed: number): BreathPhase {
   return "Exhale";
 }
 
+const MOOD_SLUG: Record<Mood, string> = {
+  Scattered:   "scattered",
+  Overwhelmed: "paralyzed",
+  Restless:    "buzzing",
+};
+
+function audioSrc(mood: Mood, duration: Duration): string {
+  const slug   = MOOD_SLUG[mood];
+  const suffix = duration === 5 ? "3m" : `${duration}m`;
+  return `/audio/${slug}-${suffix}.mp3`;
+}
+
 export default function KineticPlayer({ active, mood, duration, sound, onComplete, onBack }: Props) {
   const isMobile = useIsMobile();
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -43,15 +55,17 @@ export default function KineticPlayer({ active, mood, duration, sound, onComplet
   const [phaseVisible, setPhaseVisible] = useState(true);
   const prevPhaseRef = useRef<BreathPhase>("Inhale");
 
-  const [paused, setPaused]       = useState(false);
-  const [muted, setMuted]         = useState(false);
-  const [timeLeft, setTimeLeft]   = useState(duration * 60);
-  const [progress, setProgress]   = useState(0);
+  const [paused, setPaused]           = useState(false);
+  const [muted, setMuted]             = useState(false);
+  const [voiceMuted, setVoiceMuted]   = useState(false);
+  const [timeLeft, setTimeLeft]       = useState(duration * 60);
+  const [progress, setProgress]       = useState(0);
   const [nodeVisible, setNodeVisible] = useState(true);
 
   useAmbientSound(muted ? "none" : sound, active, paused, phase);
 
-  const pausedRef       = useRef(false);
+  const audioRef    = useRef<HTMLAudioElement | null>(null);
+  const pausedRef   = useRef(false);
   const completedRef    = useRef(false);
   const accumulatedRef  = useRef(0);
   const segmentStartRef = useRef(0);
@@ -179,6 +193,38 @@ export default function KineticPlayer({ active, mood, duration, sound, onComplet
     return () => window.removeEventListener("keydown", handleKey);
   }, [active, togglePause]);
 
+  // ── Voiceover: start / stop with session ─────────────────────────────────
+  useEffect(() => {
+    if (!active) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        audioRef.current = null;
+      }
+      return;
+    }
+    const audio = new Audio(audioSrc(mood, duration));
+    audio.volume = 0.85;
+    audioRef.current = audio;
+    audio.play().catch(() => {});
+    return () => {
+      audio.pause();
+      audio.currentTime = 0;
+      audioRef.current = null;
+    };
+  }, [active, mood, duration]);
+
+  // ── Voiceover: pause / resume with session pause and mute ─────────────────
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (paused || voiceMuted) {
+      audio.pause();
+    } else {
+      audio.play().catch(() => {});
+    }
+  }, [paused, voiceMuted]);
+
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (pausedRef.current) return;
     spawnParticles(e.clientX, e.clientY);
@@ -231,30 +277,51 @@ export default function KineticPlayer({ active, mood, duration, sound, onComplet
         alignItems: "flex-start",
         padding: isMobile ? "20px 24px 0" : "32px 32px 0",
       }}>
-        <button
-          onClick={onBack}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            padding: "4px 0",
-            fontFamily: "var(--font)",
-            fontWeight: 700,
-            fontSize: 13,
-            letterSpacing: "0.06em",
-            textTransform: "uppercase",
-            color: "var(--color-text)",
-            transition: "opacity 150ms",
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.6"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: 20 }}>arrow_back</span>
-          Back
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <button
+            onClick={onBack}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: "4px 0",
+              fontFamily: "var(--font)",
+              fontWeight: 700,
+              fontSize: 13,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+              color: "var(--color-text)",
+              transition: "opacity 150ms",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.6"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 20 }}>arrow_back</span>
+            Back
+          </button>
+          <button
+            onClick={() => setVoiceMuted(v => !v)}
+            title={voiceMuted ? "Unmute voiceover" : "Mute voiceover"}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: 4,
+              color: voiceMuted ? "var(--color-outline-variant)" : "var(--color-muted-mid)",
+              transition: "color 150ms",
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 22 }}>
+              {voiceMuted ? "volume_off" : "volume_up"}
+            </span>
+          </button>
+        </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           {sound !== "none" && (
