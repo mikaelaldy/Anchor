@@ -65,9 +65,16 @@ export default function KineticPlayer({ active, mood, duration, onComplete, onBa
   const accumulatedRef  = useRef(0);
   const segmentStartRef = useRef(0);
 
+  const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
+  useEffect(() => {
+    const onResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
   const totalMs = duration * 60 * 1000;
 
-  const ringSize   = isMobile ? Math.min(window.innerWidth * 0.82, 320) : 380;
+  const ringSize   = isMobile ? Math.min(windowWidth * 0.82, 320) : 380;
   const ringRadius = (ringSize / 400) * 185;
   const circumference = 2 * Math.PI * ringRadius;
   const strokeDash = circumference * (1 - progress);
@@ -238,7 +245,7 @@ export default function KineticPlayer({ active, mood, duration, onComplete, onBa
   };
 
   const phases: BreathPhase[] = ["Inhale", "Hold", "Exhale"];
-  const nodeSize = isMobile ? Math.min(window.innerWidth * 0.52, 210) : 248;
+  const nodeSize = isMobile ? Math.min(windowWidth * 0.52, 210) : 248;
 
   return (
     <div
